@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -110,31 +111,39 @@ func downloadAndBuild(ctx *cli.Context, conf *Config) (image string, err error) 
 		return
 	}
 	image = filepath.Base(path)
+	if conf != nil && conf.Registry != nil && conf.Registry.UserName != "" {
+		image = fmt.Sprintf("%s/%s", conf.Registry.UserName, image)
+	}
 	dockerService := docker.NewDockerService()
 	if err = dockerService.BuildImage(path, image); err != nil {
 		log.Println("Error building Docker image: ", err)
 		return "", err
 	}
 	if conf != nil && conf.Registry != nil && conf.Registry.UserName != "" {
+		log.Println("push image failed: ", err)
 		reg := conf.Registry
-		dockerService.PushImage(image, &registry.AuthConfig{
+		err = dockerService.PushImage(image, &registry.AuthConfig{
 			Username:      reg.UserName,
 			Password:      reg.Password,
 			ServerAddress: reg.ServerAddress,
 		})
+		if err != nil {
+			log.Println("push image failed: ", err)
+			return
+		}
 	}
 	return
 }
 
 type Config struct {
-	WorkDir  string    `yaml:"work_dir"`
-	Registry *Registry `yaml:"registry"`
+	WorkDir  string    `toml:"work_dir"`
+	Registry *Registry `toml:"registry"`
 }
 
 type Registry struct {
-	ServerAddress string `yaml:"server_address"`
-	UserName      string `yaml:"user_name"`
-	Password      string `yaml:"password"`
+	ServerAddress string `toml:"server_address"`
+	UserName      string `toml:"user_name"`
+	Password      string `toml:"password"`
 }
 
 func tomlMarshal(v interface{}) ([]byte, error) {
