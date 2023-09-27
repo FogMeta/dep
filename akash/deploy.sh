@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ $# -lt 2 ]; then
+    echo "invalid arguments"
+    exit 1
+fi
 source env.sh $1
 SDLFILE=$2
 provider-services tx cert generate client --from $AKASH_KEY_NAME --overwrite
@@ -13,6 +17,11 @@ fi
 export AKASH_OSEQ="$(cat $CREATE_LOG | jq -r '.logs[].events[].attributes[] | select(.key == "oseq") | .value' | sed -n '1p')"
 export AKASH_GSEQ="$(cat $CREATE_LOG | jq -r '.logs[].events[].attributes[] | select(.key == "gseq") | .value' | sed -n '1p')"
 echo $AKASH_DSEQ $AKASH_OSEQ $AKASH_GSEQ
+SLEEP_TIME=5
+if [ $# -eq 3 ];
+   SLEEP_TIME=$3
+fi
+sleep $SLEEP_TIME
 BIDS_LOG=bids.log
 provider-services query market bid list --owner=$AKASH_ACCOUNT_ADDRESS --node $AKASH_NODE --dseq $AKASH_DSEQ --state=open > $BIDS_LOG
 export AKASH_PROVIDER="$(cat $BIDS_LOG | yq '.bids| sort_by(.bid.escrow_account.balance.amount) | reverse|sort_by(.bid.price.amount)'| yq '.[0].escrow_account.owner')"
