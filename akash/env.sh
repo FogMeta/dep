@@ -7,7 +7,7 @@ echo "Your Account Address: $AKASH_ACCOUNT_ADDRESS"
 export AKASH_NET="https://raw.githubusercontent.com/akash-network/net/main/mainnet"
 export AKASH_VERSION="$(curl -s https://api.github.com/repos/akash-network/provider/releases/latest | jq -r '.tag_name')"
 export AKASH_CHAIN_ID="$(curl -s "$AKASH_NET/chain-id.txt")"
-export AKASH_NODE="$(curl -s "$AKASH_NET/rpc-nodes.txt" | shuf -n 1)"
+export AKASH_NODE="$(curl -s "$AKASH_NET/rpc-nodes.txt" | head -n 1)"
 echo "Node URL: $AKASH_NODE"
 echo "Chain ID: $AKASH_CHAIN_ID"
 export AKASH_GAS=auto

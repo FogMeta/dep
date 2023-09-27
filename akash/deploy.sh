@@ -8,7 +8,7 @@ ENV_SHELL=${0/deploy.sh/env.sh}
 echo "init env"
 source $ENV_SHELL $1
 SDLFILE=$2
-IMAGE=$(cat $SDLFILE| grep "image:" | yq -r '.image')
+IMAGE=$(cat $SDLFILE| grep "image:" | yq '.image')
 echo "Deployment: $IMAGE"
 
 # generate & publish cert
