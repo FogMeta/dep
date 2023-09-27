@@ -32,7 +32,7 @@ To compile and install DEP, follow these steps:
 
 1. Clone the [DEP](https://github.com/fogmeta/dep) repository to your local machine.
    ```
-   https://github.com/FogMeta/dep.git
+   git clone https://github.com/FogMeta/dep.git
    ```
 
 3. Navigate to the DEP project directory `cd dep`.
