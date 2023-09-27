@@ -18,7 +18,7 @@ export AKASH_OSEQ="$(cat $CREATE_LOG | jq -r '.logs[].events[].attributes[] | se
 export AKASH_GSEQ="$(cat $CREATE_LOG | jq -r '.logs[].events[].attributes[] | select(.key == "gseq") | .value' | sed -n '1p')"
 echo $AKASH_DSEQ $AKASH_OSEQ $AKASH_GSEQ
 SLEEP_TIME=5
-if [ $# -eq 3 ];
+if [ $# -eq 3 ]; then
    SLEEP_TIME=$3
 fi
 sleep $SLEEP_TIME
