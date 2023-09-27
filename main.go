@@ -21,11 +21,11 @@ const (
 )
 
 func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	log.SetFlags(0)
 	app := &cli.App{
 		Name:     "dep",
 		Flags:    []cli.Flag{},
-		Commands: []*cli.Command{initCmd, buildCmd, createAccountCmd, deployCmd},
+		Commands: []*cli.Command{initCmd, buildCmd, createAccountCmd, deployCmd, statusCmd, closeCmd},
 		Usage:    "A tool to deploy the cross-platform applications",
 	}
 
@@ -35,18 +35,92 @@ func main() {
 	}
 }
 
+var closeCmd = &cli.Command{
+	Name:  "close",
+	Usage: "close the deployment",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "name",
+			Usage: "account name",
+		},
+		&cli.StringFlag{
+			Name:  "dseq",
+			Usage: "deployment dseq",
+		},
+	},
+	Action: func(ctx *cli.Context) (err error) {
+		name := ctx.String("name")
+		dseq := ctx.String("dseq")
+		if name == "" && dseq == "" && ctx.Args().Len() >= 2 {
+			name = ctx.Args().First()
+			dseq = ctx.Args().Get(1)
+		}
+		if name == "" {
+			return errors.New("account name is required")
+		}
+		if dseq == "" {
+			return errors.New("deployment dseq is required")
+		}
+		return akash.CloseDeployment(name, dseq)
+	},
+}
+
+var statusCmd = &cli.Command{
+	Name:  "status",
+	Usage: "confirm status of the lease",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "name",
+			Usage: "account name",
+		},
+		&cli.StringFlag{
+			Name:  "dseq",
+			Usage: "deployment dseq",
+		},
+		&cli.StringFlag{
+			Name:  "provider",
+			Usage: "provider address",
+		},
+	},
+	Action: func(ctx *cli.Context) (err error) {
+		name := ctx.String("name")
+		dseq := ctx.String("dseq")
+		provider := ctx.String("provider")
+		if name == "" && dseq == "" && provider == "" && ctx.Args().Len() >= 3 {
+			name = ctx.Args().First()
+			dseq = ctx.Args().Get(1)
+			provider = ctx.Args().Get(2)
+		}
+		if name == "" {
+			return errors.New("account name is required")
+		}
+		if dseq == "" {
+			return errors.New("deployment dseq is required")
+		}
+		if provider == "" {
+			return errors.New("provider is required")
+		}
+		return akash.StatusLease(name, dseq, provider)
+	},
+}
+
 var createAccountCmd = &cli.Command{
 	Name:  "create-account",
 	Usage: "create a new account",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:     "name",
-			Usage:    "account name",
-			Required: true,
+			Name:  "name",
+			Usage: "account name",
 		},
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		name := ctx.String("name")
+		if name == "" && ctx.Args().Len() > 0 {
+			name = ctx.Args().First()
+		}
+		if name == "" {
+			return errors.New("account name is required")
+		}
 		return akash.CreateAccount(name)
 	},
 }
@@ -56,19 +130,27 @@ var deployCmd = &cli.Command{
 	Usage: "deploy SDL file",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:     "name",
-			Usage:    "account name created after 'create-account' cmd ",
-			Required: true,
+			Name:  "name",
+			Usage: "account name created after 'create-account' cmd ",
 		},
 		&cli.StringFlag{
-			Name:     "file",
-			Usage:    "deployment file path",
-			Required: true,
+			Name:  "file",
+			Usage: "deployment file path",
 		},
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		name := ctx.String("name")
 		path := ctx.String("file")
+		if name == "" && path == "" && ctx.Args().Len() >= 2 {
+			name = ctx.Args().First()
+			path = ctx.Args().Get(1)
+		}
+		if name == "" {
+			return errors.New("account name is required")
+		}
+		if path == "" {
+			return errors.New("deployment file path is required")
+		}
 		return akash.Deploy(name, path)
 	},
 }
@@ -79,7 +161,7 @@ var initCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "path",
-			Usage: "conf save path",
+			Usage: "conf save directory",
 		},
 	},
 	Action: func(ctx *cli.Context) (err error) {
@@ -113,13 +195,8 @@ var buildCmd = &cli.Command{
 			Usage: "conf file path",
 		},
 		&cli.StringFlag{
-			Name:  "work-dir",
-			Usage: "download directory",
-		},
-		&cli.StringFlag{
-			Name:     "url",
-			Usage:    "lagrange space url",
-			Required: true,
+			Name:  "url",
+			Usage: "lagrange space url",
 		},
 	},
 	Action: func(ctx *cli.Context) (err error) {
@@ -135,7 +212,14 @@ var buildCmd = &cli.Command{
 		if err != nil {
 			return
 		}
-		image, err := downloadAndBuild(ctx, conf)
+		url := ctx.String("url")
+		if url == "" && ctx.Args().Len() > 0 {
+			url = ctx.Args().First()
+		}
+		if url == "" {
+			return errors.New("url is required")
+		}
+		image, err := downloadAndBuild(ctx, conf, url)
 		if err != nil {
 			return
 		}
@@ -144,8 +228,8 @@ var buildCmd = &cli.Command{
 	},
 }
 
-func downloadAndBuild(ctx *cli.Context, conf *Config) (image string, err error) {
-	path, err := lagrange.DownloadSpace(ctx.String("url"), conf.WorkDir)
+func downloadAndBuild(ctx *cli.Context, conf *Config, url string) (image string, err error) {
+	path, err := lagrange.DownloadSpace(url, conf.WorkDir)
 	if err != nil {
 		return
 	}

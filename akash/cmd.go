@@ -22,6 +22,16 @@ func Deploy(name, ymlPath string) (err error) {
 	return DoCmd(cmd)
 }
 
+func StatusLease(name, dseq, provider string) (err error) {
+	cmd := exec.Command("bash", "akash/status.sh", name, dseq, provider)
+	return DoCmd(cmd)
+}
+
+func CloseDeployment(name, dseq string) (err error) {
+	cmd := exec.Command("bash", "akash/close.sh", name, dseq)
+	return DoCmd(cmd)
+}
+
 func syncLog(reader io.ReadCloser) {
 	cache := ""
 	buf := make([]byte, 1024)
