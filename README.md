@@ -31,10 +31,13 @@ Before using DEP, ensure that you have the following prerequisites in place:
 To compile and install DEP, follow these steps:
 
 1. Clone the [DEP](https://github.com/fogmeta/dep) repository to your local machine.
+   ```
+   https://github.com/FogMeta/dep.git
+   ```
 
-2. Navigate to the DEP project directory `cd dep`.
+3. Navigate to the DEP project directory `cd dep`.
 
-3. Run `go build`.
+4. Run `go build`.
 
 ### Framework
 
