@@ -12,9 +12,9 @@ DEP provides the following key features:
 
 2. **Deploy to AKASH Network:** DEP supports deploying your applications to the [AKASH Network](https://akash.network), a distributed cloud computing platform that provides a reliable hosting environment for your applications.
 
-3. **Deploy to Lagrange Platform:** DEP integrates with the [Lagrange Platform](https://lagrangedao.org), enabling you to deploy your applications to this powerful blockchain platform.
+3. **Deploy to Lagrange Platform:** DEP integrates with the [Lagrange Platform](https://lagrangedao.org), enabling you to deploy your applications to this powerful blockchain platform.(**coming soon**)
 
-4. **One-Click Deployment to AKASH Network:** DEP offers one-click deployment, allowing you to quickly deploy applications, including Dockerfiles and images, from Lagrange Platform to the [AKASH Network](https://akash.network), simplifying the cross-platform deployment process.
+4. **One-Click Deploy Lagrange Space to AKASH Network:** DEP offers one-click deployment, allowing you to quickly deploy applications, including Dockerfile and images, from Lagrange Platform to the [AKASH Network](https://akash.network), simplifying the cross-platform deployment process.
 
 5. **Retrieve Access URLs:** DEP provides the functionality to retrieve access URLs for your deployed applications.
 
