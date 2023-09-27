@@ -1,6 +1,6 @@
 #!/bin/bash
 AKASH_KEY_NAME=$1
-echo $AKASH_KEY_NAME
+echo "start creating account: $AKASH_KEY_NAME"
 AKASH_KEYRING_BACKEND=os
 provider-services keys add $AKASH_KEY_NAME
 export AKASH_ACCOUNT_ADDRESS="$(provider-services keys show $AKASH_KEY_NAME -a)"
