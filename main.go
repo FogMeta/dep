@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+	"github.com/FogMeta/dep/akash"
 	"github.com/FogMeta/dep/docker"
 	"github.com/FogMeta/dep/lagrange"
 	"github.com/docker/docker/api/types/registry"
@@ -24,7 +25,7 @@ func main() {
 	app := &cli.App{
 		Name:     "dep",
 		Flags:    []cli.Flag{},
-		Commands: []*cli.Command{initCmd, buildCmd},
+		Commands: []*cli.Command{initCmd, buildCmd, createAccountCmd, deployCmd},
 		Usage:    "A tool to deploy the cross-platform applications",
 	}
 
@@ -32,6 +33,44 @@ func main() {
 		log.Println(err)
 		os.Exit(1)
 	}
+}
+
+var createAccountCmd = &cli.Command{
+	Name:  "create-account",
+	Usage: "create a new account",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "name",
+			Usage:    "account name",
+			Required: true,
+		},
+	},
+	Action: func(ctx *cli.Context) (err error) {
+		name := ctx.String("name")
+		return akash.CreateAccount(name)
+	},
+}
+
+var deployCmd = &cli.Command{
+	Name:  "deploy",
+	Usage: "deploy SDL file",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "name",
+			Usage:    "account name created after 'create-account' cmd ",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "file",
+			Usage:    "deployment file path",
+			Required: true,
+		},
+	},
+	Action: func(ctx *cli.Context) (err error) {
+		name := ctx.String("name")
+		path := ctx.String("file")
+		return akash.Deploy(name, path)
+	},
 }
 
 var initCmd = &cli.Command{
