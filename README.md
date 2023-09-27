@@ -1,4 +1,4 @@
-# DEP Project
+# DEP
 
 ## Project Overview
 
@@ -8,17 +8,15 @@ DEP (Deployment Enabler Platform) is a cross-platform application deployment pro
 
 DEP provides the following key features:
 
-1. **Dockerfile Image Building Support:** DEP allows users to build application images using Dockerfiles, making it easy to deploy and manage applications.
+1. **Building Image From Dockerfile:** DEP allows users to build application images using Dockerfiles, making it easy to deploy and manage applications.
 
-2. **Deployment to AKASH Network:** DEP supports deploying your applications to the [AKASH Network](https://akash.network), a distributed cloud computing platform that provides a reliable hosting environment for your applications.
+2. **Deploy to AKASH Network:** DEP supports deploying your applications to the [AKASH Network](https://akash.network), a distributed cloud computing platform that provides a reliable hosting environment for your applications.
 
-3. **Deployment to Lagrange Platform:** DEP integrates with the [Lagrange Platform](https://lagrangedao.org), enabling you to deploy your applications to this powerful blockchain platform.
+3. **Deploy to Lagrange Platform:** DEP integrates with the [Lagrange Platform](https://lagrangedao.org), enabling you to deploy your applications to this powerful blockchain platform.
 
 4. **One-Click Deployment to AKASH Network:** DEP offers one-click deployment, allowing you to quickly deploy applications, including Dockerfiles and images, from Lagrange Platform to the [AKASH Network](https://akash.network), simplifying the cross-platform deployment process.
 
 5. **Retrieve Access URLs:** DEP provides the functionality to retrieve access URLs for your deployed applications.
-
-## Usage Instructions
 
 ### Prerequisites
 
@@ -26,7 +24,7 @@ Before using DEP, ensure that you have the following prerequisites in place:
 
 - [Docker](https://www.docker.com/) installed on your system.
 - A valid account on [AKASH Network](https://docs.akash.network/guides/cli/detailed-steps/part-2.-create-an-account) if you intend to deploy there.
-- [Lag-cli](https://github.com/lagrangedao/lagrange-cli) installed on your system 
+- GO version v1.19.0+
 
 ### Compilation and Installation
 
@@ -36,9 +34,12 @@ To compile and install DEP, follow these steps:
 
 2. Navigate to the DEP project directory `cd dep`.
 
-3. Run the installation script provided in the repository.
+3. Run `go build`.
 
-### Usage Process
+### Framework
+
+<img width="979" alt="image" src="https://github.com/FogMeta/dep/assets/102578774/91a9f49f-a0af-44e5-8a4c-5062e097dd3b">
+
 
 
 
