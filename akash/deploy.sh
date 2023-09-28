@@ -9,16 +9,17 @@ echo "init env"
 source $ENV_SHELL $1
 SDLFILE=$2
 IMAGE=$(cat $SDLFILE| grep "image:" | yq '.image')
-echo "Deployment: $IMAGE"
+echo -e "Deployment: $IMAGE\n"
 
 # generate & publish cert
 echo "Generating & publishing cert"
 provider-services tx cert generate client --from $AKASH_KEY_NAME --overwrite
 provider-services tx cert publish client --from $AKASH_KEY_NAME -y >/dev/null 2>&1
-echo "success"
+echo -e "success\n"
 
 # create deployment
 echo "Start creating deployment: $IMAGE"
+
 CREATE_LOG=create_deployment.log
 provider-services tx deployment create $SDLFILE --from $AKASH_KEY_NAME -y > $CREATE_LOG
 export AKASH_DSEQ="$(cat $CREATE_LOG | jq -r '.logs[].events[].attributes[] | select(.key == "dseq") | .value' | sed -n '1p')"
@@ -31,6 +32,7 @@ export AKASH_GSEQ="$(cat $CREATE_LOG | jq -r '.logs[].events[].attributes[] | se
 echo "    dseq: $AKASH_DSEQ"
 echo "    oseq: $AKASH_OSEQ"
 echo "    gseq: $AKASH_GSEQ"
+echo
 
 echo "Waitting for providers bids..."
 SLEEP_TIME=15
@@ -57,6 +59,7 @@ if [ -z "$AKASH_PROVIDER" ]; then
     echo "not found valid provider"
     exit 1
 fi
+echo 
 
 # create lease
 echo "Start creating the lease"
@@ -66,9 +69,10 @@ provider-services send-manifest $SDLFILE --dseq $AKASH_DSEQ --provider $AKASH_PR
 echo "Start creating the lease"
 echo "    provider: $AKASH_PROVIDER"
 echo "    status:       PASS"
+echo
 
 # query deployment url
-echo "waitting for lease url..."
+echo "Waitting for lease url..."
 sleep $SLEEP_TIME
 echo "Querying the lease url..."
 LEASE_STATUS_LOG=lease-status.log
