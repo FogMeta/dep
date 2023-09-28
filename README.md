@@ -18,15 +18,19 @@ DEP provides the following key features:
 
 5. **Retrieve Access URLs:** DEP provides the functionality to retrieve access URLs for your deployed applications.
 
-### Prerequisites
+## Prerequisites
 
 Before using DEP, ensure that you have the following prerequisites in place:
 
-- [Docker](https://www.docker.com/) installed on your system.
+- [Docker](https://www.docker.com/) installed and started
 - A valid account on [AKASH Network](https://docs.akash.network/guides/cli/detailed-steps/part-2.-create-an-account) if you intend to deploy there.
-- GO version v1.19.0+
+- [GO](https://go.dev/dl/) version v1.19.0+ installed
+- [Lag-cli](https://github.com/lagrangedao/lagrange-cli) installed
+- [Akash-cli](https://docs.akash.network/guides/cli/detailed-steps/part-1.-install-akash) installed 
+- [jq](https://jqlang.github.io/jq/download/) installed 
+- [yq](https://github.com/mikefarah/yq#install) installed
 
-### Compilation and Installation
+## Compilation and Installation
 
 To compile and install DEP, follow these steps:
 
@@ -39,14 +43,98 @@ To compile and install DEP, follow these steps:
 
 4. Run `go build`.
 
-### Framework
+## Framework
 
 <img width="979" alt="image" src="https://github.com/FogMeta/dep/assets/102578774/91a9f49f-a0af-44e5-8a4c-5062e097dd3b">
 
 
+## Usage
 
+### Init 
 
-### Use Case
+init configuration
+
+```bash
+dep init 
+```
+
+after `init`, `dep.conf` file generated in current directory, which content like below:
+
+```yml
+work_dir = "."
+
+[registry]
+  server_address = ""
+  user_name = ""
+  password = ""
+```
+
+| parameter      | description              |
+| -------------- | ------------------------ |
+| work_dir       | directory to build image |
+| registry       | registry to pull image   |
+| server_address | registry server          |
+| user_name      | registry user name       |
+| password       | registry password        |
+
+you can set it in your config
+
+### Build
+
+build docker image
+
+```bash
+dep build [lag_url]
+```
+
+### Create Account
+
+create a new account
+
+```bash
+dep create-account [account_name]
+```
+
+result like below:
+
+```bash
+**Important** write this mnemonic phrase in a safe place.
+It is the only way to recover your account if you ever forget your password.
+
+****
+ ----------------------------------------------------------------------------------
+| your akash account address: akash**         |
+| you need get funds into your account before using it.                            |
+ ----------------------------------------------------------------------------------
+```
+
+### Deploy
+
+deploy the deployment file
+
+```bash
+dep deploy [account_name] [deployment_file]
+```
+
+if deployed successfully, you can get the deployment's `desq`,`provider`,`price` and `uris`
+
+### Status
+
+query the status of the deployment
+
+```bash
+dep status [account_name] [dseq] [provider]
+```
+
+### Close
+
+close the deployment
+
+```bash
+dep close [account_name] [dseq]
+```
+
+## Use Case
 Here is a case to deploy the `Hellow World` in [Lagrange Platform](https://lagrangedao.org) to the [AKASH Network](https://akash.network) using `Dockerfile`
 
 
