@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/FogMeta/dep/akash"
@@ -198,6 +199,10 @@ var buildCmd = &cli.Command{
 			Name:  "url",
 			Usage: "lagrange space url",
 		},
+		&cli.StringFlag{
+			Name:  "tag",
+			Usage: "image tag",
+		},
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		confPath := ctx.String("conf")
@@ -213,13 +218,20 @@ var buildCmd = &cli.Command{
 			return
 		}
 		url := ctx.String("url")
+		tag := ctx.String("tag")
 		if url == "" && ctx.Args().Len() > 0 {
 			url = ctx.Args().First()
+			tag = ctx.Args().Get(1)
 		}
 		if url == "" {
 			return errors.New("url is required")
 		}
-		image, err := downloadAndBuild(ctx, conf, url)
+		var image string
+		if strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") {
+			image, err = downloadAndBuild(conf, url, tag)
+		} else {
+			image, err = buildAndPushImage(conf, url, tag)
+		}
 		if err != nil {
 			return
 		}
@@ -228,12 +240,28 @@ var buildCmd = &cli.Command{
 	},
 }
 
-func downloadAndBuild(ctx *cli.Context, conf *Config, url string) (image string, err error) {
+func downloadAndBuild(conf *Config, url, tag string) (image string, err error) {
 	path, err := lagrange.DownloadSpace(url, conf.WorkDir)
 	if err != nil {
 		return
 	}
-	image = filepath.Base(path)
+	return buildAndPushImage(conf, path, tag)
+}
+
+func buildAndPushImage(conf *Config, path, tag string) (image string, err error) {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return
+	}
+	if tag == "" {
+		if fi.IsDir() {
+			image = filepath.Base(path)
+		} else {
+			image = filepath.Dir(path)
+		}
+	} else {
+		image = tag
+	}
 	if conf != nil && conf.Registry != nil && conf.Registry.UserName != "" {
 		image = fmt.Sprintf("%s/%s", conf.Registry.UserName, image)
 	}
