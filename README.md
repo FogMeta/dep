@@ -137,8 +137,38 @@ dep close [account_name] [dseq]
 ## Use Case
 Here is a case to deploy the `Hellow World` in [Lagrange Platform](https://lagrangedao.org) to the [AKASH Network](https://akash.network) using `Dockerfile`
 
-
+`vi hello.yaml`
 ```
+version: "2.0"
+services:
+  web:
+    image: filswan/hello-wolrd
+    expose:
+      - port: 7860
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    web:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        web:
+          denom: uakt
+          amount: 10
+deployment:
+  web:
+    dcloud:
+      profile: web
+      count: 1
 
 
 ```
