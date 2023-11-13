@@ -8,4 +8,7 @@ type Result struct {
 
 const (
 	Success = 0
+
+	UserTokenExpired = 1401
+	UserTokenInvalid = 1402
 )
