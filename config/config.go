@@ -30,12 +30,12 @@ type Redis struct {
 }
 
 type Email struct {
-	Email    string `toml:"email"`
-	Password string `toml:"password"`
-	Host     string `toml:"host"`
-	Port     int    `toml:"port"`
-	Subject  string `toml:"subject"`
-	Template string `toml:"template"`
+	Email           string `toml:"email"`
+	Password        string `toml:"password"`
+	Host            string `toml:"host"`
+	Port            int    `toml:"port"`
+	Subject         string `toml:"subject"`
+	ContentTemplate string `toml:"content_template"`
 }
 
 type Lagrange struct {
