@@ -4,8 +4,10 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/rand"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -43,6 +45,32 @@ func DownloadLinkSize(url string) (size int64, err error) {
 	size, err = strconv.ParseInt(contentLength, 10, 64)
 	if err != nil {
 		return 0, errors.New("invalid download url")
+	}
+	return
+}
+
+func EncodeStructValues(data any, tag string) (encoded string, err error) {
+	rv := reflect.Indirect(reflect.ValueOf(data))
+	rt := rv.Type()
+	if rv.Kind() != reflect.Struct {
+		return "", fmt.Errorf("only support struct type")
+	}
+	for i := 0; i < rt.NumField(); i++ {
+		key := ""
+		field := rt.Field(i)
+		if !field.IsExported() {
+			continue
+		}
+		if tag != "" {
+			key = field.Tag.Get(tag)
+			if key == "-" {
+				continue
+			}
+		} else {
+			key = field.Name
+		}
+		value := rv.Field(i).Interface()
+		encoded += fmt.Sprintf("%s=%v", key, value)
 	}
 	return
 }
