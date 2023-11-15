@@ -75,6 +75,7 @@ func (s *UserService) RegisterWithWallet(user *model.User, token string) (res *r
 	}
 	// create new user
 	user.Status = 1
+	user.Password = misc.MD5(user.Password)
 	if err = s.Insert(user); err != nil {
 		return
 	}
@@ -97,10 +98,10 @@ func (s *UserService) RegisterWithEmail(user *model.User, authCode string) (res 
 	}
 	// create new user
 	user.Status = 1
+	user.Password = misc.MD5(user.Password)
 	if err = s.Insert(user); err != nil {
 		return
 	}
-
 	return s.generateToken(user)
 }
 
