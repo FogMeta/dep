@@ -28,7 +28,7 @@ func (s *EmailService) SendEmail(email string) (code int, err error) {
 		Host:     conf.Host,
 		Port:     conf.Port,
 	}
-	err = emailer.Send(conf.Subject, fmt.Sprintf(conf.ContentTemplate, code), email)
+	err = emailer.Send(conf.Subject, fmt.Sprintf(conf.ContentTemplate, authCode), email)
 	if err != nil {
 		return result.UserEmailSendFailed, err
 	}
