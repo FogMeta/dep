@@ -11,7 +11,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const redisUserSecretKeyFormat = "lira:jwt:uid:%d:secret"
+const (
+	redisUserSecretKeyFormat = "lira:jwt:uid:%d:secret"
+	redisUserTokenFresh      = "lira:jwt:uid:%d:token"
+)
 
 type JWTService struct{}
 
@@ -21,7 +24,11 @@ func (s *JWTService) Validate(token string) (uid int, newToken string, err error
 		return
 	}
 	uid = claims.User.ID
-	if time.Until(claims.ExpiresAt.Time) < 10*time.Minute {
+	if time.Until(claims.ExpiresAt.Time) < tokenExpireDuration/2 {
+		ctx := context.Background()
+		key := fmt.Sprintf(redisUserTokenFresh, uid)
+		redis.RDB.SetNX(ctx, key, 1, time.Second*10)
+		defer redis.RDB.Del(ctx, key)
 		newToken, err = claims.User.GenerateToken(false)
 		return
 	}

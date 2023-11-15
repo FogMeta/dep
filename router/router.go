@@ -2,8 +2,10 @@ package router
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/FogMeta/libra-os/api/result"
+	apiV1 "github.com/FogMeta/libra-os/api/v1"
 	"github.com/FogMeta/libra-os/service"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +18,21 @@ func init() {
 	Router.Use(cors())
 	v1 := Router.Group("v1")
 	{
+
+		// email
+		emailApi := new(apiV1.EmailApi)
+		v1.POST("/email", emailApi.Send)
+
+		// user
+		user := v1.Group("/user")
+		userApi := new(apiV1.UserApi)
+		user.POST("", userApi.Register)
+		user.POST("/login", userApi.Login)
+		user.PUT("/login", userApi.ResetPassword)
+		user.Use(JWT())
+		user.PUT("", userApi.UpdatePassword)
+		user.GET("", userApi.UserInfo)
+
 		// spaces
 		v1.GET("/spaces")
 
@@ -43,26 +60,27 @@ var jwtService service.JWTService
 func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth := c.Request.Header.Get("Authorization")
-		if len(auth) == 0 {
-			c.Abort()
-			c.JSON(http.StatusOK, result.Result{
-				Code: result.UserTokenExpired,
-				Msg:  "token expired, need login again",
-			})
-			return
-		}
-		uid, newToken, err := jwtService.Validate(auth)
-		if err != nil {
+		if !strings.HasPrefix(auth, "Bearer ") {
 			c.Abort()
 			c.JSON(http.StatusOK, result.Result{
 				Code: result.UserTokenInvalid,
-				Msg:  "token invalid, need login again",
+				Msg:  "token invalid, please login again",
+			})
+			return
+		}
+		token := strings.TrimPrefix("Bearer ", auth)
+		uid, newToken, err := jwtService.Validate(token)
+		if err != nil {
+			c.Abort()
+			c.JSON(http.StatusOK, result.Result{
+				Code: result.UserTokenExpired,
+				Msg:  "token expired, please login again",
 			})
 			return
 		}
 		if newToken != "" {
 			c.Header("new-token", newToken)
-			c.Request.Header.Set("Authorization", newToken)
+			c.Request.Header.Set("Authorization", "Bearer "+newToken)
 		}
 		c.Set("uid", uid)
 		c.Next()

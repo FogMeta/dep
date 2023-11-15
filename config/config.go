@@ -9,6 +9,7 @@ type Configuration struct {
 	DataBase Database `toml:"db"`
 	Redis    Redis    `toml:"redis"`
 	Email    Email    `toml:"email"`
+	Lagrange Lagrange `toml:"lagrange"`
 	Log      Log      `toml:"log"`
 }
 
@@ -35,6 +36,10 @@ type Email struct {
 	Port     int    `toml:"port"`
 	Subject  string `toml:"subject"`
 	Template string `toml:"template"`
+}
+
+type Lagrange struct {
+	Host string `toml:"host"`
 }
 
 type Log struct {
