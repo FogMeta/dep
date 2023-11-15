@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	redisUserSecretKeyFormat = "lira:jwt:uid:%d:secret"
-	redisUserTokenFresh      = "lira:jwt:uid:%d:token"
+	redisUserSecretKeyFormat = "libra:jwt:uid:%d:secret"
+	redisUserTokenFresh      = "libra:jwt:uid:%d:token"
 )
 
 type JWTService struct{}

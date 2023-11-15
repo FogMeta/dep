@@ -12,7 +12,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-const RedisEmailKeyFormat = "ark:email:%s"
+const RedisEmailKeyFormat = "libra:email:%s"
 
 type EmailService struct{}
 
