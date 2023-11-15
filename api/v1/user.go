@@ -16,7 +16,7 @@ type UserApi struct {
 }
 
 func (api *UserApi) ResetPassword(c *gin.Context) {
-	var req req.UserCreateReq
+	var req req.UserResetPasswordReq
 	if err := api.ParseReq(c, &req); err != nil {
 		return
 	}

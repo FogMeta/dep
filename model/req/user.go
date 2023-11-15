@@ -13,6 +13,12 @@ type UserLoginReq struct {
 	Password string `json:"password"    binding:"required"`
 }
 
+type UserResetPasswordReq struct {
+	Email    string `json:"email"              binding:"required"`
+	Password string `json:"password"           binding:"required"`
+	AuthCode string `json:"auth_code"          binding:"required"`
+}
+
 type UserUpdatePasswordReq struct {
 	Password    string `json:"password"     binding:"required"`
 	OldPassword string `json:"old_password" binding:"required"`
