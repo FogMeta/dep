@@ -20,27 +20,57 @@ const (
 )
 
 type Client struct {
-	Host string
+	Host    string
+	SDKHost string
+	token   string
+	apiKey  string
 	http.Client
 }
 
-func (client *Client) postJson(token string, method string, data any, receiver any) error {
-	return client.doRequest(token, "POST", contentTypeJson, data, method, receiver)
+func (client *Client) WithToken(token string) *Client {
+	c := *client
+	c.token = token
+	return &c
 }
 
-func (client *Client) postForm(token string, method string, data any, receiver any) error {
-	return client.doRequest(token, "POST", contentTypeForm, data, method, receiver)
+func (client *Client) WithAPIKey(key string) *Client {
+	c := *client
+	c.apiKey = key
+	return &c
 }
 
-func (client *Client) get(token string, method string, data url.Values, receiver any) error {
-	return client.doRequest(token, "GET", "", nil, method, receiver)
+func (client *Client) postJson(method string, data any, receiver any) error {
+	return client.doRequest("POST", contentTypeJson, data, method, receiver)
 }
 
-func (client *Client) doRequest(token string, method string, contentType string, data any, apiMethod string, receiver any) error {
+func (client *Client) postForm(method string, data any, receiver any) error {
+	return client.doRequest("POST", contentTypeForm, data, method, receiver)
+}
+
+func (client *Client) get(method string, data url.Values, receiver any) error {
+	return client.doRequest("GET", "", nil, method, receiver)
+}
+
+func (client *Client) doRequest(method string, contentType string, data any, apiMethod string, receiver any) error {
 	if receiver != nil && reflect.ValueOf(receiver).Kind() != reflect.Ptr {
 		return errors.New("receiver must be a pointer")
 	}
-	link := client.Host + apiMethod
+	var host, token string
+
+	if method == methodAPIToken || method == methodWallet {
+		host = client.Host
+		token = client.token
+		if token == "" {
+			return errors.New("token must not be empty")
+		}
+	} else {
+		host = client.SDKHost
+		token = client.apiKey
+		if token == "" {
+			return errors.New("api key must not be empty")
+		}
+	}
+	link := host + apiMethod
 	var reader io.Reader
 	switch method {
 	case http.MethodPost:
@@ -104,5 +134,5 @@ func (client *Client) doRequest(token string, method string, contentType string,
 type Result struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
+	Data    any    `json:"data"`
 }
