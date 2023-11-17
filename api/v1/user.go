@@ -37,12 +37,7 @@ func (api *UserApi) Register(c *gin.Context) {
 	if err := api.ParseReq(c, &req); err != nil {
 		return
 	}
-	user := &model.User{
-		Email:    req.Email,
-		Password: req.Password,
-		Type:     req.Type,
-	}
-	resp, code, err := userService.RegisterWithEmail(user, req.AuthCode)
+	resp, code, err := userService.Register(&req)
 	if err != nil {
 		api.ErrResponse(c, code, err)
 		return
@@ -55,11 +50,7 @@ func (api *UserApi) Login(c *gin.Context) {
 	if err := api.ParseReq(c, &req); err != nil {
 		return
 	}
-	user := &model.User{
-		Email:    req.Email,
-		Password: req.Password,
-	}
-	resp, code, err := userService.Login(user)
+	resp, code, err := userService.Login(&req)
 	if err != nil {
 		api.ErrResponse(c, code, err)
 		return

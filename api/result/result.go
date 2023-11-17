@@ -23,4 +23,7 @@ const (
 	UserNotFound         = 1206
 
 	UserEmailPasswordIncorrect = 1301
+
+	SpaceURLInvalid     = 2001
+	SpaceWalletNotMatch = 2002
 )

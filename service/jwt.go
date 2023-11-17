@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/FogMeta/libra-os/misc"
+	"github.com/FogMeta/libra-os/module/log"
 	"github.com/FogMeta/libra-os/module/redis"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -19,8 +20,9 @@ const (
 type JWTService struct{}
 
 func (s *JWTService) Validate(token string) (uid int, newToken string, err error) {
-	claims := new(ArkClaims)
+	claims := new(Claims)
 	if err = claims.ParseToken(token); err != nil {
+		log.Error(err)
 		return
 	}
 	uid = claims.User.ID
@@ -40,19 +42,19 @@ func (s *JWTService) GenerateToken(id int, renew bool) (token string, err error)
 	return user.GenerateToken(renew)
 }
 
-type ArkClaims struct {
+type Claims struct {
 	jwt.RegisteredClaims
-	User *UserInfo
+	User *UserInfo `json:"user"`
 }
 
-func (claims *ArkClaims) ParseToken(token string) error {
+func (claims *Claims) ParseToken(token string) error {
 	_, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
 		return claims.User.Secret()
 	})
 	return err
 }
 
-func (claims *ArkClaims) RenewToken() (string, error) {
+func (claims *Claims) RenewToken() (string, error) {
 	if time.Since(claims.ExpiresAt.Time) < 10*time.Minute {
 		return claims.User.GenerateToken(false)
 	}
@@ -67,7 +69,7 @@ const (
 )
 
 type UserInfo struct {
-	ID int
+	ID int `json:"id"`
 }
 
 func (user *UserInfo) GenerateToken(renew bool) (string, error) {
@@ -85,7 +87,7 @@ func (user *UserInfo) GenerateToken(renew bool) (string, error) {
 		}
 	}
 	expirationTime := time.Now().Add(tokenExpireDuration)
-	claims := &ArkClaims{
+	claims := &Claims{
 		User: user,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: &jwt.NumericDate{
