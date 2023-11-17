@@ -33,11 +33,25 @@ func init() {
 		user.PUT("", userApi.UpdatePassword)
 		user.GET("", userApi.UserInfo)
 
+		v1.Use(JWT())
 		// spaces
-		v1.GET("/spaces")
+		spaceApi := new(apiV1.SpaceAPI)
+		v1.POST("/spaces/info", spaceApi.SpaceInfo)
+
+		// deployments
+		deployments := v1.Group("/deployments")
+		deployApi := new(apiV1.DeploymentAPI)
+		deployments.POST("", deployApi.Deploy)
+		deployments.GET("", deployApi.Deployments)
+		deployments.GET("/status", deployApi.DeployStatus)
 
 		// providers
-		v1.GET("/providers")
+		providers := v1.Group("/providers")
+		providerApi := new(apiV1.ProviderAPI)
+		providers.GET("", providerApi.ProviderList)
+		providers.GET("/:uuid", providerApi.Provider)
+		providers.GET("/distribution", providerApi.ProviderDistribution)
+		providers.GET("/resources", providerApi.Resources)
 	}
 
 }
@@ -68,7 +82,7 @@ func JWT() gin.HandlerFunc {
 			})
 			return
 		}
-		token := strings.TrimPrefix("Bearer ", auth)
+		token := strings.TrimPrefix(auth, "Bearer ")
 		uid, newToken, err := jwtService.Validate(token)
 		if err != nil {
 			c.Abort()

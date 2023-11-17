@@ -107,3 +107,11 @@ func (*DBService) Transaction(fc func(tx *DB) error) error {
 		return fc(tx)
 	})
 }
+
+func (*DBService) User(uid int) (*model.User, error) {
+	var user model.User
+	if err := db.DB.First(&user, uid).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

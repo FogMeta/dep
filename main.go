@@ -9,6 +9,7 @@ import (
 	"github.com/FogMeta/libra-os/module/log"
 	"github.com/FogMeta/libra-os/module/redis"
 	"github.com/FogMeta/libra-os/router"
+	"github.com/FogMeta/libra-os/service"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
 	db.Init()
 	model.AutoMigrateDBModel()
 	redis.Init()
+	service.Init()
 
 	router.Router.SetTrustedProxies(nil)
 	router.Router.Run(fmt.Sprintf(":%d", config.Conf().Port))

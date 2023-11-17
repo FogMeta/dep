@@ -15,9 +15,17 @@ func (a *BaseApi) UID(c *gin.Context) int {
 	return c.GetInt("uid")
 }
 
-func (api *BaseApi) ParseReq(c *gin.Context, receiverPointer any) error {
+func (api *BaseApi) ParseReq(c *gin.Context, receiverPointer any, query ...bool) error {
 	body, _ := httputil.DumpRequest(c.Request, true)
 	log.Info(string(body))
+	if len(query) > 0 && query[0] {
+		if err := c.BindQuery(receiverPointer); err != nil {
+			log.Error(err)
+			c.AbortWithError(http.StatusBadRequest, err)
+			return err
+		}
+		return nil
+	}
 	if err := c.ShouldBind(receiverPointer); err != nil {
 		log.Error(err)
 		c.AbortWithError(http.StatusBadRequest, err)
