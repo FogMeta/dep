@@ -51,13 +51,13 @@ func (client *Client) get(method string, data url.Values, receiver any) error {
 	return client.doRequest("GET", "", nil, method, receiver)
 }
 
-func (client *Client) doRequest(method string, contentType string, data any, apiMethod string, receiver any) error {
+func (client *Client) doRequest(method string, contentType string, data any, api string, receiver any) error {
 	if receiver != nil && reflect.ValueOf(receiver).Kind() != reflect.Ptr {
 		return errors.New("receiver must be a pointer")
 	}
 	var host, token string
-
-	if method == methodAPIToken || method == methodWallet {
+	log.Info("api method :", api, ",data: ", data)
+	if api == methodAPIToken || api == methodWallet {
 		host = client.Host
 		token = client.token
 		if token == "" {
@@ -70,7 +70,7 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 			return errors.New("api key must not be empty")
 		}
 	}
-	link := host + apiMethod
+	link := host + api
 	var reader io.Reader
 	switch method {
 	case http.MethodPost:
@@ -107,6 +107,7 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 	default:
 		return fmt.Errorf("not supported method %s", method)
 	}
+	log.Info("method: ", method, ",api: ", link, ",reader:", reader)
 	req, err := http.NewRequest(method, link, reader)
 	if err != nil {
 		return err
@@ -122,7 +123,7 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 	log.Info("response:", string(b))
 	var result Result
 	result.Data = receiver
-	if err = json.Unmarshal(b, receiver); err != nil {
+	if err = json.Unmarshal(b, &result); err != nil {
 		return err
 	}
 	if result.Status != "success" {

@@ -21,7 +21,7 @@ func (client *Client) ProviderList(region string) (providers []*Provider, err er
 	return
 }
 
-func (client *Client) ProviderDetail(providerID string) (provider *Provider, err error) {
+func (client *Client) Provider(providerID string) (provider *Provider, err error) {
 	var result Provider
 	if err = client.get(methodProviderDetail+"/"+providerID, nil, &result); err != nil {
 		return
@@ -75,8 +75,8 @@ type ProviderResource struct {
 }
 
 type Resource struct {
-	CPU     int64  `json:"cpu"`
-	GPU     int64  `json:"gpu"`
-	Memory  string `json:"memory"`
-	Storage string `json:"storage"`
+	CPU     int `json:"cpu"`
+	GPU     int `json:"gpu"`
+	Memory  int `json:"memory"`
+	Storage int `json:"storage"`
 }

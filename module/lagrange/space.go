@@ -18,14 +18,13 @@ func (client *Client) SpaceUUID(spaceURL string) (uuid string, err error) {
 	data := url.Values{}
 	data.Set("space_url", spaceURL)
 	var result spaceUUIDResult
-	if err = client.postForm(methodSpaceUUID, data, &result); err != nil {
-		return
-	}
-	return result.UUID, nil
+	result.SpaceUUID = &uuid
+	err = client.postForm(methodSpaceUUID, data, &result)
+	return
 }
 
 type spaceUUIDResult struct {
-	UUID string `json:"uuid"`
+	SpaceUUID *string `json:"space_uuid"`
 }
 
 func (client *Client) Deploy(req *SpaceDeployReq) (status *SpaceDeployResult, err error) {
@@ -42,7 +41,7 @@ func (client *Client) Deploy(req *SpaceDeployReq) (status *SpaceDeployResult, er
 
 type SpaceDeployReq struct {
 	SpaceName string `json:"space_name"`
-	Paid      int    `json:"paid"`
+	Paid      string `json:"paid"`
 	Duration  int    `json:"duration"`
 	TxHash    string `json:"tx_hash"`
 	ChainID   string `json:"chain_id"`
@@ -52,6 +51,55 @@ type SpaceDeployReq struct {
 }
 
 type SpaceDeployResult struct {
+	Space Space `json:"space"`
+	Task  Task  `json:"task"`
+}
+
+type Space struct {
+	ActiveOrder    ActiveOrder `json:"activeOrder"`
+	CreatedAt      string      `json:"created_at"`
+	ExpirationTime string      `json:"expiration_time"`
+	IsPublic       int64       `json:"is_public"`
+	LastStopReason interface{} `json:"last_stop_reason"`
+	License        string      `json:"license"`
+	Likes          int64       `json:"likes"`
+	Name           string      `json:"name"`
+	SDK            string      `json:"sdk"`
+	Status         string      `json:"status"`
+	TaskUUID       string      `json:"task_uuid"`
+	UpdatedAt      string      `json:"updated_at"`
+	UUID           string      `json:"uuid"`
+}
+
+type ActiveOrder struct {
+	Config    Config      `json:"config"`
+	CreatedAt string      `json:"created_at"`
+	Duration  int64       `json:"duration"`
+	EndedAt   interface{} `json:"ended_at"`
+	OrderType interface{} `json:"order_type"`
+	SpaceName string      `json:"space_name"`
+	StartedAt int64       `json:"started_at"`
+	UpdatedAt string      `json:"updated_at"`
+}
+
+type Config struct {
+	Description  string      `json:"description"`
+	Hardware     interface{} `json:"hardware"`
+	HardwareType string      `json:"hardware_type"`
+	Memory       int64       `json:"memory"`
+	Name         string      `json:"name"`
+	PricePerHour float64     `json:"price_per_hour"`
+	Vcpu         int64       `json:"vcpu"`
+}
+
+type Task struct {
+	CreatedAt     string      `json:"created_at"`
+	LeadingJobID  interface{} `json:"leading_job_id"`
+	Name          string      `json:"name"`
+	Status        string      `json:"status"`
+	TaskDetailCid string      `json:"task_detail_cid"`
+	UpdatedAt     string      `json:"updated_at"`
+	UUID          string      `json:"uuid"`
 }
 
 func (client *Client) DeployStatus(uuid string) (status *DeployStatus, err error) {
@@ -80,9 +128,9 @@ type JobIDResult struct {
 	JobUUID *string `json:"job_uuid"`
 }
 
-func (client *Client) Deployment(obUUID, spaceUUID string) (deployment *Deployment, err error) {
+func (client *Client) Deployment(jobUUID, spaceUUID string) (deployment *Deployment, err error) {
 	var result Deployment
-	if err = client.get(methodJobUUID+"/"+spaceUUID, nil, &result); err != nil {
+	if err = client.get(methodJobUUID+"/"+spaceUUID+"/"+spaceUUID, nil, &result); err != nil {
 		return
 	}
 	return &result, nil
@@ -100,8 +148,8 @@ type Deployment struct {
 	Status         string      `json:"status"`
 }
 
-func (client *Client) DeploymentList(jobUUID, spaceUUID string) (deployments []*DeploymentAbstract, err error) {
-	err = client.get(methodSpaceDeployment+"/"+jobUUID+"/"+spaceUUID, nil, &deployments)
+func (client *Client) DeploymentList() (deployments []*DeploymentAbstract, err error) {
+	err = client.get(methodDeploymentList, nil, &deployments)
 	return
 }
 
