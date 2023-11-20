@@ -10,6 +10,10 @@ import (
 
 type DBService struct{}
 
+func (d *DBService) DB() *gorm.DB {
+	return db.DB
+}
+
 func (*DBService) Insert(data model.Table) error {
 	return db.DB.Create(data).Error
 }

@@ -7,7 +7,7 @@ type Table interface {
 }
 
 func AutoMigrateDBModel() {
-	if err := db.DB.AutoMigrate(new(User)); err != nil {
+	if err := db.DB.AutoMigrate(new(User), new(Deployment)); err != nil {
 		panic(err)
 	}
 }

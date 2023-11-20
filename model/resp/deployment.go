@@ -1,23 +1,36 @@
 package resp
 
+import "github.com/FogMeta/libra-os/module/lagrange"
+
 type DeploymentCreateResp struct {
-	JobUUID string `json:"job_uuid"`
+	ID int `json:"id"`
+	lagrange.SpaceDeployResult
 }
 
-type DeploymentListResp struct {
-	SpaceName string `json:"space_name"`
-	SpaceUUID string `json:"space_uuid"`
-	Status    int    `json:"status"`
+type DeploymentAbstract struct {
+	ID int `json:"id"`
+	lagrange.DeploymentAbstract
 }
 
-type DeploymentResp struct {
-	ProviderNodeID string `json:"provider_node_id"`
+type Deployment struct {
+	ID int `json:"id"`
+	lagrange.Deployment
+}
+
+type DeploymentInfo struct {
+	ID             int    `json:"id"`
+	UID            int    `json:"uid"`
+	SpaceID        string `json:"space_id"`
+	SpaceName      string `json:"space_name"`
+	CfgName        string `json:"cfg_name"`
+	Duration       int    `json:"duration"`
 	Region         string `json:"region"`
-	DeployStatus   int    `json:"deploy_status"`
 	ResultURL      string `json:"result_url"`
-	EndedAt        int    `json:"ended_at"`
-	Status         string `json:"status"`
-	ExpiredAt      int    `json:"expired_at"`
-	Balance        string `json:"balance"`
+	ProviderID     string `json:"provider_id"`
+	ProviderNodeID string `json:"provider_node_id"`
 	Cost           string `json:"cost"`
+	Status         int    `json:"status"`
+	StatusMsg      string `json:"status_msg"`
+	Source         int    `json:"source"`
+	CreatedAt      int64  `json:"created_at"`
 }

@@ -19,6 +19,7 @@ func main() {
 	model.AutoMigrateDBModel()
 	redis.Init()
 	service.Init()
+	service.RunJobs()
 
 	router.Router.SetTrustedProxies(nil)
 	router.Router.Run(fmt.Sprintf(":%d", config.Conf().Port))

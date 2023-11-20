@@ -43,6 +43,7 @@ func init() {
 		deployApi := new(apiV1.DeploymentAPI)
 		deployments.POST("", deployApi.Deploy)
 		deployments.GET("", deployApi.Deployments)
+		deployments.GET("/:id", deployApi.DeploymentInfo)
 		deployments.GET("/status", deployApi.DeployStatus)
 
 		// providers

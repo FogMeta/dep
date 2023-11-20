@@ -1,6 +1,9 @@
 package v1
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/FogMeta/libra-os/api"
 	"github.com/FogMeta/libra-os/api/result"
 	"github.com/FogMeta/libra-os/model/req"
@@ -75,6 +78,21 @@ func (api *DeploymentAPI) Deployments(c *gin.Context) {
 func (api *DeploymentAPI) DeploymentList(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := spaceService.DeploymentList(uid)
+	if err != nil {
+		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		return
+	}
+	api.Response(c, info)
+}
+
+func (api *DeploymentAPI) DeploymentInfo(c *gin.Context) {
+	uid := api.UID(c)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		api.ErrResponse(c, result.InvalidPara, errors.New("invalid id"))
+		return
+	}
+	info, err := spaceService.DeploymentInfo(uid, id)
 	if err != nil {
 		api.ErrResponse(c, result.SpaceURLInvalid, err)
 		return
