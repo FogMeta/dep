@@ -39,7 +39,7 @@ type Provider struct {
 	NodeID            string        `json:"node_id"`
 	Specs             ResourceSpecs `json:"specs"`
 	Total             Resource      `json:"total"`
-	Uptime            string        `json:"uptime"`
+	Uptime            int           `json:"uptime"`
 	Used              Resource      `json:"used"`
 }
 

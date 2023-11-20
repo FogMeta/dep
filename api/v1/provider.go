@@ -36,9 +36,9 @@ func (api *ProviderAPI) Provider(c *gin.Context) {
 	uuid, _ := c.Params.Get("uuid")
 	if uuid == "" {
 		c.AbortWithError(http.StatusBadRequest, errors.New("invalid uuid"))
+		return
 	}
 	uid := api.UID(c)
-
 	info, err := providerService.Provider(uid, uuid)
 	if err != nil {
 		api.ErrResponse(c, result.SpaceURLInvalid, err)
