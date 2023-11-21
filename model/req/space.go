@@ -22,7 +22,9 @@ type DeploymentStatusReq struct {
 type DeploymentQueryReq struct {
 	JobUUID   string `json:"job_uuid"    form:"job_uuid"`
 	SpaceUUID string `json:"space_uuid"  form:"space_uuid"`
-	Status    string `json:"status"      form:"status"`
+	Status    int    `json:"status"      form:"status"`
+	PageNo    int    `json:"page_no"     form:"page_no"`
+	PageSize  int    `json:"page_size"   form:"page_size"`
 }
 
 type DeploymentConfig struct {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -22,7 +23,13 @@ const (
 	StatusAssignProvider
 	StatusDeploying
 	StatusSuccess
+	StatusStopped
 )
+
+var statusMap = map[string]int{
+	"Running": StatusSuccess,
+	"Stopped": StatusStopped,
+}
 
 type SpaceService struct {
 	DBService
@@ -76,6 +83,7 @@ func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *res
 		Region:    req.Region,
 		StartIn:   req.StartIn,
 		Source:    SourceLagrange,
+		Status:    StatusReady,
 	}
 	if err = s.Insert(dp); err != nil {
 		return
@@ -144,6 +152,41 @@ func (s *SpaceService) DeploymentInfo(uid int, id int) (deployment *resp.Deploym
 	return
 }
 
+func (s *SpaceService) Deployments(deployment *model.Deployment, args ...int) (deployments []*model.Deployment, err error) {
+	var wheres []string
+	if deployment.Status == 1 {
+		deployment.Status = 0
+		wheres = append(wheres, fmt.Sprintf("status BETWEEN %d AND %d", StatusReady, StatusSuccess))
+	}
+	if err = s.Find(deployment, &deployments, wheres, args...); err != nil {
+		return
+	}
+
+	for _, dp := range deployments {
+		if dp.ResultURL != "" {
+			continue
+		}
+		if err = s.LagrangeSync(dp); err != nil {
+			log.Error(err)
+		}
+	}
+	return
+}
+
+func (s *SpaceService) Count(deployment *model.Deployment) (count int64, err error) {
+	var where string
+	if deployment.Status == 1 {
+		deployment.Status = 0
+		where = fmt.Sprintf("status BETWEEN %d AND %d", StatusReady, StatusSuccess)
+	}
+	dm := s.DB().Model(deployment).Where(deployment)
+	if where != "" {
+		dm = dm.Where(where)
+	}
+	err = dm.Count(&count).Error
+	return
+}
+
 func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	if dp.ResultURL != "" {
 		return
@@ -171,7 +214,8 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	dp.ResultURL = result.ResultURL
 	dp.ProviderNodeID = result.ProviderNodeID
 	dp.Cost = result.ExpectedCost
-	dp.StatusMsg = "Running"
+	dp.StatusMsg = result.DeployStatus
+	dp.Status = statusMap[result.DeployStatus]
 	if result.ResultURL != "" {
 		dp.Status = StatusSuccess
 	}

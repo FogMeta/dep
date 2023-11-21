@@ -6,8 +6,10 @@ import (
 
 	"github.com/FogMeta/libra-os/api"
 	"github.com/FogMeta/libra-os/api/result"
+	"github.com/FogMeta/libra-os/model"
 	"github.com/FogMeta/libra-os/model/req"
-	"github.com/FogMeta/libra-os/module/lagrange"
+	"github.com/FogMeta/libra-os/model/resp"
+	"github.com/FogMeta/libra-os/module/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,15 +57,6 @@ func (api *DeploymentAPI) Deployments(c *gin.Context) {
 			api.ErrResponse(c, result.SpaceURLInvalid, err)
 			return
 		}
-		if req.Status != "" {
-			list := make([]*lagrange.DeploymentAbstract, 0, len(info))
-			for _, deployment := range info {
-				if deployment.Status == req.Status {
-					list = append(list, deployment)
-				}
-			}
-			info = list
-		}
 		api.Response(c, info)
 		return
 	}
@@ -76,13 +69,54 @@ func (api *DeploymentAPI) Deployments(c *gin.Context) {
 }
 
 func (api *DeploymentAPI) DeploymentList(c *gin.Context) {
+	var req req.DeploymentQueryReq
+	if err := api.ParseReq(c, &req, true); err != nil {
+		return
+	}
+	page, size := req.PageNo, req.PageSize
+	if size <= 0 {
+		size = 10
+	} else if size > 30 {
+		size = 30
+	}
 	uid := api.UID(c)
-	info, err := spaceService.DeploymentList(uid)
+	deployment := &model.Deployment{
+		UID:    uid,
+		Status: req.Status,
+	}
+	list, err := spaceService.Deployments(deployment, page*size, size)
 	if err != nil {
 		api.ErrResponse(c, result.SpaceURLInvalid, err)
 		return
 	}
-	api.Response(c, info)
+	deployments := make([]*resp.DeploymentInfo, 0, len(list))
+	for _, dp := range list {
+		deployments = append(deployments, &resp.DeploymentInfo{
+			ID:             dp.ID,
+			UID:            dp.UID,
+			SpaceID:        dp.SpaceID,
+			SpaceName:      dp.SpaceName,
+			CfgName:        dp.CfgName,
+			Duration:       dp.Duration,
+			Region:         dp.Region,
+			ResultURL:      dp.ResultURL,
+			ProviderID:     dp.ProviderID,
+			ProviderNodeID: dp.ProviderNodeID,
+			Cost:           dp.Cost,
+			Status:         dp.Status,
+			StatusMsg:      dp.StatusMsg,
+			Source:         dp.Source,
+			CreatedAt:      dp.CreatedAt.Unix(),
+		})
+	}
+	total, err := spaceService.Count(deployment)
+	if err != nil {
+		log.Error(err)
+	}
+	api.Response(c, resp.PageList{
+		Total: int(total),
+		List:  deployments,
+	})
 }
 
 func (api *DeploymentAPI) DeploymentInfo(c *gin.Context) {

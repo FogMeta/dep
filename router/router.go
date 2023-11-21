@@ -42,7 +42,7 @@ func init() {
 		deployments := v1.Group("/deployments")
 		deployApi := new(apiV1.DeploymentAPI)
 		deployments.POST("", deployApi.Deploy)
-		deployments.GET("", deployApi.Deployments)
+		deployments.GET("", deployApi.DeploymentList)
 		deployments.GET("/:id", deployApi.DeploymentInfo)
 		deployments.GET("/status", deployApi.DeployStatus)
 

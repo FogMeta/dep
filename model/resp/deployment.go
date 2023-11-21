@@ -34,3 +34,8 @@ type DeploymentInfo struct {
 	Source         int    `json:"source"`
 	CreatedAt      int64  `json:"created_at"`
 }
+
+type PageList struct {
+	Total int `json:"total"`
+	List  any `json:"list"`
+}

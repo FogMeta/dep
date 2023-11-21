@@ -25,7 +25,7 @@ func (s *JobService) Run() {
 
 func (s *JobService) SyncDeployment() (err error) {
 	var deployments []*model.Deployment
-	if err = s.DB().Model(model.Deployment{}).Where("result_url != ''").Find(&deployments).Error; err != nil {
+	if err = s.DB().Model(model.Deployment{}).Where("result_url = ''").Find(&deployments).Error; err != nil {
 		log.Error(err)
 		return
 	}
