@@ -49,12 +49,13 @@ func DownloadLinkSize(url string) (size int64, err error) {
 	return
 }
 
-func EncodeStructValues(data any, tag string) (encoded string, err error) {
+func EncodeStructValues(data any, tag, sep string) (encoded string, err error) {
 	rv := reflect.Indirect(reflect.ValueOf(data))
 	rt := rv.Type()
 	if rv.Kind() != reflect.Struct {
 		return "", fmt.Errorf("only support struct type")
 	}
+	list := make([]string, 0, rt.NumField())
 	for i := 0; i < rt.NumField(); i++ {
 		key := ""
 		field := rt.Field(i)
@@ -70,7 +71,7 @@ func EncodeStructValues(data any, tag string) (encoded string, err error) {
 			key = field.Name
 		}
 		value := rv.Field(i).Interface()
-		encoded += fmt.Sprintf("%s=%v", key, value)
+		list = append(list, fmt.Sprintf("%s=%v", key, value))
 	}
-	return
+	return strings.Join(list, sep), nil
 }

@@ -21,14 +21,12 @@ func (api *BaseApi) ParseReq(c *gin.Context, receiverPointer any, query ...bool)
 	if len(query) > 0 && query[0] {
 		if err := c.BindQuery(receiverPointer); err != nil {
 			log.Error(err)
-			c.AbortWithError(http.StatusBadRequest, err)
 			return err
 		}
 		return nil
 	}
-	if err := c.ShouldBind(receiverPointer); err != nil {
+	if err := c.BindJSON(receiverPointer); err != nil {
 		log.Error(err)
-		c.AbortWithError(http.StatusBadRequest, err)
 		return err
 	}
 	return nil

@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/FogMeta/libra-os/misc"
+	"github.com/FogMeta/libra-os/module/log"
 )
 
 const (
@@ -28,10 +29,11 @@ type spaceUUIDResult struct {
 }
 
 func (client *Client) Deploy(req *SpaceDeployReq) (status *SpaceDeployResult, err error) {
-	values, err := misc.EncodeStructValues(req, "json")
+	values, err := misc.EncodeStructValues(req, "json", "&")
 	if err != nil {
 		return
 	}
+	log.Info("values: ", values)
 	var result SpaceDeployResult
 	if err = client.postForm(methodSpaceDeploy, values, &result); err != nil {
 		return
@@ -130,7 +132,7 @@ type JobIDResult struct {
 
 func (client *Client) Deployment(jobUUID, spaceUUID string) (deployment *Deployment, err error) {
 	var result Deployment
-	if err = client.get(methodJobUUID+"/"+spaceUUID+"/"+spaceUUID, nil, &result); err != nil {
+	if err = client.get(methodSpaceDeployment+"/"+jobUUID+"/"+spaceUUID, nil, &result); err != nil {
 		return
 	}
 	return &result, nil

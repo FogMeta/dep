@@ -45,7 +45,7 @@ func (api *DeploymentAPI) DeployStatus(c *gin.Context) {
 
 func (api *DeploymentAPI) Deployments(c *gin.Context) {
 	var req req.DeploymentQueryReq
-	if err := api.ParseReq(c, &req); err != nil {
+	if err := api.ParseReq(c, &req, true); err != nil {
 		return
 	}
 	uid := api.UID(c)

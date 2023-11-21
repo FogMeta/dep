@@ -80,8 +80,10 @@ func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *res
 	if err = s.Insert(dp); err != nil {
 		return
 	}
-	deployment.ID = dp.ID
-	return
+	return &resp.DeploymentCreateResp{
+		ID:                dp.ID,
+		SpaceDeployResult: *result,
+	}, nil
 }
 
 func (s *SpaceService) DeployStatus(uid int, spaceUUID string) (result *lagrange.DeployStatus, err error) {
@@ -129,7 +131,7 @@ func (s *SpaceService) DeploymentInfo(uid int, id int) (deployment *resp.Deploym
 		SpaceName:      dp.SpaceName,
 		CfgName:        dp.CfgName,
 		Duration:       dp.Duration,
-		Region:         dp.ChainID,
+		Region:         dp.Region,
 		ResultURL:      dp.ResultURL,
 		ProviderID:     dp.ProviderID,
 		ProviderNodeID: dp.ProviderNodeID,
@@ -137,6 +139,7 @@ func (s *SpaceService) DeploymentInfo(uid int, id int) (deployment *resp.Deploym
 		Status:         dp.Status,
 		StatusMsg:      dp.StatusMsg,
 		Source:         SourceLagrange,
+		CreatedAt:      dp.CreatedAt.Unix(),
 	}
 	return
 }
@@ -149,7 +152,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	if err != nil {
 		return
 	}
-	expired := dp.CreatedAt.Add(time.Duration(dp.Duration) * time.Second).Before(time.Now())
+	expired := dp.CreatedAt.Add(time.Duration(dp.StartIn) * time.Second).Before(time.Now())
 	if dp.JobID == "" {
 		dp.JobID, err = lagClient.WithAPIKey(user.APIKey).JobID(dp.SpaceID)
 		if err != nil {
@@ -158,8 +161,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 				return
 			}
 		}
-		dp.StatusMsg = "deployment is deploying"
-		return
+		dp.StatusMsg = "Deploying"
 	}
 	result, err := lagClient.WithAPIKey(user.APIKey).Deployment(dp.JobID, dp.SpaceID)
 	if err != nil {
@@ -169,6 +171,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	dp.ResultURL = result.ResultURL
 	dp.ProviderNodeID = result.ProviderNodeID
 	dp.Cost = result.ExpectedCost
+	dp.StatusMsg = "Running"
 	if result.ResultURL != "" {
 		dp.Status = StatusSuccess
 	}

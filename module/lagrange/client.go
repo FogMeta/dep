@@ -90,11 +90,6 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 			default:
 				return errors.New("invalid data type, must be url.Values or encoded values string in form mode")
 			}
-			values, ok := data.(url.Values)
-			if !ok {
-				return errors.New("invalid data type, must be url.Values in form mode")
-			}
-			reader = strings.NewReader(values.Encode())
 		default:
 			return fmt.Errorf("not supported content type: %s", contentType)
 		}
@@ -112,7 +107,7 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", contentType)
 	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := client.Do(req)
 	if err != nil {

@@ -20,9 +20,9 @@ type DeploymentStatusReq struct {
 }
 
 type DeploymentQueryReq struct {
-	JobUUID   string `json:"job_uuid"`
-	SpaceUUID string `json:"space_uuid"`
-	Status    string `json:"status"`
+	JobUUID   string `json:"job_uuid"    form:"job_uuid"`
+	SpaceUUID string `json:"space_uuid"  form:"space_uuid"`
+	Status    string `json:"status"      form:"status"`
 }
 
 type DeploymentConfig struct {
