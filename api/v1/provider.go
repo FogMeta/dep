@@ -73,3 +73,23 @@ func (api *ProviderAPI) Resources(c *gin.Context) {
 
 	api.Response(c, info)
 }
+
+func (api *ProviderAPI) Machines(c *gin.Context) {
+	info, err := providerService.Machines()
+	if err != nil {
+		api.ErrResponse(c, result.InternalError, err)
+		return
+	}
+
+	api.Response(c, info)
+}
+
+func (api *ProviderAPI) Dashboard(c *gin.Context) {
+	info, err := providerService.Dashboard()
+	if err != nil {
+		api.ErrResponse(c, result.InternalError, err)
+		return
+	}
+
+	api.Response(c, info)
+}

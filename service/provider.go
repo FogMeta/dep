@@ -41,3 +41,13 @@ func (s *ProviderService) ResourceSummary(uid int) (resource *lagrange.ProviderR
 	resource, err = lagClient.WithAPIKey(user.APIKey).ResourceSummary()
 	return
 }
+
+func (s *ProviderService) Machines() (resource *lagrange.HardwareData, err error) {
+	resource, err = lagClient.Machines()
+	return
+}
+
+func (s *ProviderService) Dashboard() (resource *lagrange.Dashboard, err error) {
+	resource, err = lagClient.Dashboard()
+	return
+}

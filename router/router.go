@@ -33,13 +33,15 @@ func init() {
 		user.PUT("", userApi.UpdatePassword)
 		user.GET("", userApi.UserInfo)
 
-		v1.Use(JWT())
 		// spaces
 		spaceApi := new(apiV1.SpaceAPI)
-		v1.POST("/spaces/info", spaceApi.SpaceInfo)
+		spaces := v1.Group("/spaces")
+		spaces.Use(JWT())
+		spaces.POST("/info", spaceApi.SpaceInfo)
 
 		// deployments
 		deployments := v1.Group("/deployments")
+		deployments.Use(JWT())
 		deployApi := new(apiV1.DeploymentAPI)
 		deployments.POST("", deployApi.Deploy)
 		deployments.GET("", deployApi.DeploymentList)
@@ -49,12 +51,16 @@ func init() {
 		// providers
 		providers := v1.Group("/providers")
 		providerApi := new(apiV1.ProviderAPI)
+		// no need validate
+		providers.GET("/dashboard", providerApi.Dashboard)
+		providers.GET("/machines", providerApi.Machines)
+		// need validate
+		providers.Use(JWT())
 		providers.GET("", providerApi.ProviderList)
 		providers.GET("/:uuid", providerApi.Provider)
 		providers.GET("/distribution", providerApi.ProviderDistribution)
 		providers.GET("/resources", providerApi.Resources)
 	}
-
 }
 
 func cors() gin.HandlerFunc {

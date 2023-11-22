@@ -63,6 +63,8 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 		if token == "" {
 			return errors.New("token must not be empty")
 		}
+	} else if api == methodProviderMachines || api == methodProviderDashboard {
+		host = client.Host
 	} else {
 		host = client.SDKHost
 		token = client.apiKey
@@ -108,7 +110,9 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 		return err
 	}
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Authorization", "Bearer "+token)
+	if token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
