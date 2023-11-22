@@ -9,11 +9,11 @@ type Result struct {
 const (
 	Success = 0
 
-	DBError         = 1001
-	RedisError      = 1002
-	FileCreateError = 1003
-	InvalidPara     = 1101
-	URLInvalid      = 1102
+	InternalError = 1000
+	DBError       = 1001
+	RedisError    = 1002
+	InvalidPara   = 1101
+	URLInvalid    = 1102
 
 	UserEmailRegistered  = 1201
 	UserEmailCodeInvalid = 1202

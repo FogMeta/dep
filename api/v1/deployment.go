@@ -25,7 +25,7 @@ func (api *DeploymentAPI) Deploy(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := spaceService.Deploy(uid, &req)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 	api.Response(c, info)
@@ -39,7 +39,7 @@ func (api *DeploymentAPI) DeployStatus(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := spaceService.DeployStatus(uid, req.SpaceUUID)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 	api.Response(c, info)
@@ -54,7 +54,7 @@ func (api *DeploymentAPI) Deployments(c *gin.Context) {
 	if req.JobUUID == "" && req.SpaceUUID == "" {
 		info, err := spaceService.DeploymentList(uid)
 		if err != nil {
-			api.ErrResponse(c, result.SpaceURLInvalid, err)
+			api.ErrResponse(c, result.InternalError, err)
 			return
 		}
 		api.Response(c, info)
@@ -62,7 +62,7 @@ func (api *DeploymentAPI) Deployments(c *gin.Context) {
 	}
 	info, err := spaceService.Deployment(uid, req.JobUUID, req.SpaceUUID)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 	api.Response(c, info)
@@ -86,7 +86,7 @@ func (api *DeploymentAPI) DeploymentList(c *gin.Context) {
 	}
 	list, err := spaceService.Deployments(deployment, page*size, size)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 	deployments := make([]*resp.DeploymentInfo, 0, len(list))
@@ -128,7 +128,7 @@ func (api *DeploymentAPI) DeploymentInfo(c *gin.Context) {
 	}
 	info, err := spaceService.DeploymentInfo(uid, id)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 	api.Response(c, info)

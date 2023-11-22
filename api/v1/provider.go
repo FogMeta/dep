@@ -25,7 +25,7 @@ func (api *ProviderAPI) ProviderList(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := providerService.ProviderList(uid, req.Region)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (api *ProviderAPI) Provider(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := providerService.Provider(uid, uuid)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (api *ProviderAPI) ProviderDistribution(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := providerService.ProviderDistribution(uid, req.Region)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (api *ProviderAPI) Resources(c *gin.Context) {
 	uid := api.UID(c)
 	info, err := providerService.ResourceSummary(uid)
 	if err != nil {
-		api.ErrResponse(c, result.SpaceURLInvalid, err)
+		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
 
