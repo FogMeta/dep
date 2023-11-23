@@ -15,7 +15,7 @@ func (s *ProviderService) ProviderList(uid int, region string) (providers []*lag
 	return
 }
 
-func (s *ProviderService) Provider(uid int, providerID string) (provider *lagrange.Provider, err error) {
+func (s *ProviderService) Provider(uid int, providerID int) (provider *lagrange.Provider, err error) {
 	user, err := s.User(uid, true)
 	if err != nil {
 		return

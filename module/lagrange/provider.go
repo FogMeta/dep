@@ -1,6 +1,9 @@
 package lagrange
 
-import "net/url"
+import (
+	"fmt"
+	"net/url"
+)
 
 const (
 	methodProviderList         = "/cp_list"
@@ -23,15 +26,17 @@ func (client *Client) ProviderList(region string) (providers []*Provider, err er
 	return
 }
 
-func (client *Client) Provider(providerID string) (provider *Provider, err error) {
+func (client *Client) Provider(providerID int) (provider *Provider, err error) {
 	var result Provider
-	if err = client.get(methodProviderDetail+"/"+providerID, nil, &result); err != nil {
+	if err = client.get(fmt.Sprintf("%s/%d", methodProviderDetail, providerID), nil, &result); err != nil {
 		return
 	}
+	result.ID = providerID
 	return &result, nil
 }
 
 type Provider struct {
+	ID                int           `json:"id"`
 	ActiveDeployments int64         `json:"active_deployments"`
 	Address           string        `json:"address"`
 	Free              Resource      `json:"free"`

@@ -57,7 +57,7 @@ func init() {
 		// need validate
 		providers.Use(JWT())
 		providers.GET("", providerApi.ProviderList)
-		providers.GET("/:uuid", providerApi.Provider)
+		providers.GET("/:id", providerApi.Provider)
 		providers.GET("/distribution", providerApi.ProviderDistribution)
 		providers.GET("/resources", providerApi.Resources)
 	}

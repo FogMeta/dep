@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/FogMeta/libra-os/api"
 	"github.com/FogMeta/libra-os/api/result"
@@ -33,13 +34,14 @@ func (api *ProviderAPI) ProviderList(c *gin.Context) {
 }
 
 func (api *ProviderAPI) Provider(c *gin.Context) {
-	uuid, _ := c.Params.Get("uuid")
-	if uuid == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("invalid uuid"))
+	id := c.Param("id")
+	pid, err := strconv.Atoi(id)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, errors.New("invalid id"))
 		return
 	}
 	uid := api.UID(c)
-	info, err := providerService.Provider(uid, uuid)
+	info, err := providerService.Provider(uid, pid)
 	if err != nil {
 		api.ErrResponse(c, result.InternalError, err)
 		return
