@@ -112,10 +112,15 @@ func (*DBService) Transaction(fc func(tx *DB) error) error {
 	})
 }
 
-func (*DBService) User(uid int) (*model.User, error) {
+func (*DBService) User(uid int, checkKey ...bool) (*model.User, error) {
 	var user model.User
 	if err := db.DB.First(&user, uid).Error; err != nil {
 		return nil, err
+	}
+	if len(checkKey) > 0 && checkKey[0] {
+		if user.APIKey == "" {
+			return nil, errNotFoundKey
+		}
 	}
 	return &user, nil
 }

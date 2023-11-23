@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -11,6 +12,8 @@ import (
 	"github.com/FogMeta/libra-os/module/lagrange"
 	"github.com/FogMeta/libra-os/module/log"
 )
+
+var errNotFoundKey = errors.New("not found api token")
 
 const (
 	SourceLagrange = iota + 1
@@ -36,7 +39,7 @@ type SpaceService struct {
 }
 
 func (s *SpaceService) SpaceInfo(uid int, spaceURL string) (space *resp.SpaceResp, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -54,7 +57,7 @@ func (s *SpaceService) SpaceInfo(uid int, spaceURL string) (space *resp.SpaceRes
 }
 
 func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *resp.DeploymentCreateResp, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -95,7 +98,7 @@ func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *res
 }
 
 func (s *SpaceService) DeployStatus(uid int, spaceUUID string) (result *lagrange.DeployStatus, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -107,7 +110,7 @@ func (s *SpaceService) DeployStatus(uid int, spaceUUID string) (result *lagrange
 }
 
 func (s *SpaceService) Deployment(uid int, jobUUID, spaceUUID string) (result *lagrange.Deployment, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -116,7 +119,7 @@ func (s *SpaceService) Deployment(uid int, jobUUID, spaceUUID string) (result *l
 }
 
 func (s *SpaceService) DeploymentList(uid int) (deployments []*lagrange.DeploymentAbstract, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -191,7 +194,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	if dp.ResultURL != "" {
 		return
 	}
-	user, err := s.User(dp.UID)
+	user, err := s.User(dp.UID, true)
 	if err != nil {
 		return
 	}

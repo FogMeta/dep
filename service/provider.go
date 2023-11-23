@@ -7,7 +7,7 @@ type ProviderService struct {
 }
 
 func (s *ProviderService) ProviderList(uid int, region string) (providers []*lagrange.Provider, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -16,7 +16,7 @@ func (s *ProviderService) ProviderList(uid int, region string) (providers []*lag
 }
 
 func (s *ProviderService) Provider(uid int, providerID string) (provider *lagrange.Provider, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -25,7 +25,7 @@ func (s *ProviderService) Provider(uid int, providerID string) (provider *lagran
 }
 
 func (s *ProviderService) ProviderDistribution(uid int, region string) (distributions []*lagrange.Distribution, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
@@ -34,7 +34,7 @@ func (s *ProviderService) ProviderDistribution(uid int, region string) (distribu
 }
 
 func (s *ProviderService) ResourceSummary(uid int) (resource *lagrange.ProviderResource, err error) {
-	user, err := s.User(uid)
+	user, err := s.User(uid, true)
 	if err != nil {
 		return
 	}
