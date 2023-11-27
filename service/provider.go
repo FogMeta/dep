@@ -1,6 +1,9 @@
 package service
 
-import "github.com/FogMeta/libra-os/module/lagrange"
+import (
+	"github.com/FogMeta/libra-os/module/lagrange"
+	"github.com/FogMeta/libra-os/module/log"
+)
 
 type ProviderService struct {
 	DBService
@@ -12,6 +15,9 @@ func (s *ProviderService) ProviderList(uid int, region string) (providers []*lag
 		return
 	}
 	providers, err = lagClient.WithAPIKey(user.APIKey).ProviderList(region)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -21,6 +27,9 @@ func (s *ProviderService) Provider(uid int, providerID int) (provider *lagrange.
 		return
 	}
 	provider, err = lagClient.WithAPIKey(user.APIKey).Provider(providerID)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -30,6 +39,9 @@ func (s *ProviderService) ProviderDistribution(uid int, region string) (distribu
 		return
 	}
 	distributions, err = lagClient.WithAPIKey(user.APIKey).ProviderDistribution(region)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -39,15 +51,24 @@ func (s *ProviderService) ResourceSummary(uid int) (resource *lagrange.ProviderR
 		return
 	}
 	resource, err = lagClient.WithAPIKey(user.APIKey).ResourceSummary()
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
 func (s *ProviderService) Machines() (resource *lagrange.HardwareData, err error) {
 	resource, err = lagClient.Machines()
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
-func (s *ProviderService) Dashboard() (resource *lagrange.Dashboard, err error) {
-	resource, err = lagClient.Dashboard()
+func (s *ProviderService) Dashboard() (dashboard *lagrange.Dashboard, err error) {
+	dashboard, err = lagClient.Dashboard()
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }

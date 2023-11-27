@@ -118,7 +118,7 @@ func (s *SpaceService) DeployStatus(uid int, spaceUUID string) (result *lagrange
 	}
 	result, err = lagClient.WithAPIKey(user.APIKey).DeployStatus(spaceUUID)
 	if err != nil {
-		return
+		log.Error(err)
 	}
 	return
 }
@@ -129,6 +129,9 @@ func (s *SpaceService) Deployment(uid int, jobUUID, spaceUUID string) (result *l
 		return
 	}
 	result, err = lagClient.WithAPIKey(user.APIKey).Deployment(jobUUID, spaceUUID)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -138,6 +141,9 @@ func (s *SpaceService) DeploymentList(uid int) (deployments []*lagrange.Deployme
 		return
 	}
 	deployments, err = lagClient.WithAPIKey(user.APIKey).DeploymentList()
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -147,6 +153,7 @@ func (s *SpaceService) DeploymentInfo(uid int, id int) (deployment *resp.Deploym
 		return
 	}
 	if err = s.LagrangeSync(dp); err != nil {
+		log.Error(err)
 		return
 	}
 	deployment = &resp.DeploymentInfo{
@@ -219,6 +226,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 		if err != nil {
 			log.Error(err)
 			if expired {
+				log.Infof("deployment %d space %s deploy expired", dp.ID, dp.SpaceID)
 				return
 			}
 		}
@@ -226,6 +234,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	}
 	result, err := lagClient.WithAPIKey(user.APIKey).Deployment(dp.JobID, dp.SpaceID)
 	if err != nil {
+		log.Error(err)
 		return
 	}
 	dp.StatusMsg = result.Status
@@ -239,6 +248,7 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	}
 	// update db
 	s.DB().Model(dp).Updates(&model.Deployment{
+		JobID:          dp.JobID,
 		StatusMsg:      result.Status,
 		ResultURL:      result.ResultURL,
 		ProviderNodeID: result.ProviderNodeID,
