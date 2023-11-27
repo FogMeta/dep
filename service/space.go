@@ -74,9 +74,13 @@ func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *res
 	if err != nil {
 		return
 	}
+	spaceUUID := req.SpaceUUID
+	if result.Space.UUID != "" {
+		spaceUUID = result.Space.UUID
+	}
 	dp := &model.Deployment{
 		UID:       uid,
-		SpaceID:   result.Space.UUID,
+		SpaceID:   spaceUUID,
 		SpaceName: req.SpaceName,
 		CfgName:   req.CfgName,
 		Paid:      req.Paid,

@@ -5,6 +5,7 @@ type SpaceReq struct {
 }
 
 type SpaceDeployReq struct {
+	SpaceUUID string `json:"space_uuid"`
 	SpaceName string `json:"space_name"`
 	Paid      string `json:"paid"`
 	Duration  int    `json:"duration"`
