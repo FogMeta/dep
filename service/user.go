@@ -73,6 +73,7 @@ func (s *UserService) LoginWithWallet(user *model.User, token string) (res *resp
 	if err = s.First(dbu); err == nil {
 		if dbu.APIKey != user.APIKey {
 			// update api key
+			dbu.APIKey = user.APIKey
 			if err = s.Updates(dbu, "api_key"); err != nil {
 				return
 			}
