@@ -36,5 +36,5 @@ func (api *SpaceAPI) SpaceInfo(c *gin.Context) {
 		api.ErrResponse(c, result.SpaceWalletNotMatch, errors.New("space must be your own, please fork to your space and retry"))
 		return
 	}
-	api.Response(c, nil)
+	api.Response(c, info)
 }
