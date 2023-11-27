@@ -53,8 +53,54 @@ type SpaceDeployReq struct {
 }
 
 type SpaceDeployResult struct {
-	Space Space `json:"space"`
-	Task  Task  `json:"task"`
+	Space             Space              `json:"space"`
+	Task              Task               `json:"task"`
+	DeploymentRequest *DeploymentRequest `json:"deployment_request"`
+	Payment           *Payment           `json:"payment"`
+}
+
+type DeploymentRequest struct {
+	ChainID         int64        `json:"chain_id"`
+	CreatedAt       string       `json:"created_at"`
+	Order           *DeployOrder `json:"order"`
+	SpaceName       string       `json:"space_name"`
+	TransactionHash string       `json:"transaction_hash"`
+	UpdatedAt       string       `json:"updated_at"`
+}
+
+type DeployOrder struct {
+	Config    *DeplyConfig `json:"config"`
+	CreatedAt string       `json:"created_at"`
+	Duration  int64        `json:"duration"`
+	EndedAt   interface{}  `json:"ended_at"`
+	OrderType interface{}  `json:"order_type"`
+	SpaceName string       `json:"space_name"`
+	StartedAt interface{}  `json:"started_at"`
+	UpdatedAt string       `json:"updated_at"`
+}
+
+type DeplyConfig struct {
+	Description  string      `json:"description"`
+	Hardware     interface{} `json:"hardware"`
+	HardwareType string      `json:"hardware_type"`
+	Memory       int64       `json:"memory"`
+	Name         string      `json:"name"`
+	PricePerHour float64     `json:"price_per_hour"`
+	Vcpu         int64       `json:"vcpu"`
+}
+
+type Payment struct {
+	Amount           string      `json:"amount"`
+	ChainID          int64       `json:"chain_id"`
+	CreatedAt        string      `json:"created_at"`
+	DeniedReason     interface{} `json:"denied_reason"`
+	Order            DeployOrder `json:"order"`
+	RefundReason     interface{} `json:"refund_reason"`
+	RefundableAmount interface{} `json:"refundable_amount"`
+	Status           string      `json:"status"`
+	Token            interface{} `json:"token"`
+	TransactionHash  string      `json:"transaction_hash"`
+	UpdatedAt        string      `json:"updated_at"`
 }
 
 type Space struct {

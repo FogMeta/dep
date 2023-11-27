@@ -30,8 +30,11 @@ const (
 )
 
 var statusMap = map[string]int{
-	"Running": StatusSuccess,
-	"Stopped": StatusStopped,
+	"Running":                 StatusSuccess,
+	"Stopped":                 StatusStopped,
+	"Pending":                 StatusTransaction,
+	"Waiting for transaction": StatusTransaction,
+	"Assigning to provider":   StatusAssignProvider,
 }
 
 type SpaceService struct {
@@ -78,6 +81,12 @@ func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *res
 	if result.Space.UUID != "" {
 		spaceUUID = result.Space.UUID
 	}
+	status := StatusReady
+	statusMsg := result.Space.Status
+	if result.Payment != nil && result.Payment.Status == "Pending" {
+		status = StatusTransaction
+		statusMsg = "Waiting for transaction"
+	}
 	dp := &model.Deployment{
 		UID:       uid,
 		SpaceID:   spaceUUID,
@@ -90,7 +99,8 @@ func (s *SpaceService) Deploy(uid int, req *req.SpaceDeployReq) (deployment *res
 		Region:    req.Region,
 		StartIn:   req.StartIn,
 		Source:    SourceLagrange,
-		Status:    StatusReady,
+		Status:    status,
+		StatusMsg: statusMsg,
 	}
 	if err = s.Insert(dp); err != nil {
 		return
@@ -166,6 +176,7 @@ func (s *SpaceService) Deployments(deployment *model.Deployment, args ...int) (d
 		wheres = append(wheres, fmt.Sprintf("status BETWEEN %d AND %d", StatusReady, StatusSuccess))
 	}
 	if err = s.Find(deployment, &deployments, wheres, args...); err != nil {
+		log.Error(err)
 		return
 	}
 
@@ -173,7 +184,7 @@ func (s *SpaceService) Deployments(deployment *model.Deployment, args ...int) (d
 		if dp.ResultURL != "" {
 			continue
 		}
-		if err = s.LagrangeSync(dp); err != nil {
+		if err := s.LagrangeSync(dp); err != nil {
 			log.Error(err)
 		}
 	}
