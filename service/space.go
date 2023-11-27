@@ -227,7 +227,9 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 			log.Error(err)
 			if expired {
 				log.Infof("deployment %d space %s deploy expired", dp.ID, dp.SpaceID)
-				return
+				dp.Status = StatusFailed
+				dp.StatusMsg = err.Error()
+				return nil
 			}
 		}
 		dp.StatusMsg = "Deploying"
