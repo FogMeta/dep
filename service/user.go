@@ -54,15 +54,17 @@ func (s *UserService) Register(req *req.UserCreateReq) (res *resp.UserResp, code
 
 // LoginWithWallet login or register without login
 func (s *UserService) LoginWithWallet(user *model.User, token string) (res *resp.UserResp, code int, err error) {
-	// validate wallet token
+	// get api key
 	client := lagClient.WithToken(token)
-	user.Wallet, err = client.WalletAddr()
+	user.APIKey, err = client.APIToken()
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	// get api key
-	user.APIKey, err = client.APIToken()
+
+	// validate wallet token
+	client = client.WithAPIKey(user.APIKey)
+	user.Wallet, err = client.WalletAddr()
 	if err != nil {
 		log.Error(err)
 		return

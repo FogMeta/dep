@@ -1,8 +1,12 @@
 package lagrange
 
+import "net/url"
+
 const (
 	methodAPIToken = "/api_token"
 	methodWallet   = "/jwt_info"
+
+	methodTokenWallet = "/address_from_token"
 )
 
 func (client *Client) APIToken() (key string, err error) {
@@ -29,4 +33,13 @@ func (client *Client) WalletAddr() (wallet string, err error) {
 
 type WalletAddrResult struct {
 	WalletAddress *string `json:"wallet_address"`
+}
+
+func (client *Client) TokenWallet() (wallet string, err error) {
+	data := url.Values{}
+	data.Set("Token", client.apiKey)
+	var result WalletAddrResult
+	result.WalletAddress = &wallet
+	err = client.postForm(methodTokenWallet, data, &result)
+	return
 }

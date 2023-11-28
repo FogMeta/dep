@@ -247,6 +247,10 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	dp.Status = statusMap[result.DeployStatus]
 	if result.ResultURL != "" {
 		dp.Status = StatusSuccess
+		result.ResultURL, err = lagrange.ResultURL(result.ResultURL)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	// update db
 	s.DB().Model(dp).Updates(&model.Deployment{
