@@ -64,7 +64,7 @@ func (s *UserService) LoginWithWallet(user *model.User, token string) (res *resp
 
 	// validate wallet token
 	client = client.WithAPIKey(user.APIKey)
-	user.Wallet, err = client.WalletAddr()
+	user.Wallet, err = client.TokenWallet()
 	if err != nil {
 		log.Error(err)
 		return
