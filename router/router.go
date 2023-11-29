@@ -83,7 +83,7 @@ func JWT() gin.HandlerFunc {
 		auth := c.Request.Header.Get("Authorization")
 		if !strings.HasPrefix(auth, "Bearer ") {
 			c.Abort()
-			c.JSON(http.StatusOK, result.Result{
+			c.JSON(http.StatusUnauthorized, result.Result{
 				Code: result.UserTokenInvalid,
 				Msg:  "token invalid, please login again",
 			})
@@ -93,7 +93,7 @@ func JWT() gin.HandlerFunc {
 		uid, newToken, err := jwtService.Validate(token)
 		if err != nil {
 			c.Abort()
-			c.JSON(http.StatusOK, result.Result{
+			c.JSON(http.StatusUnauthorized, result.Result{
 				Code: result.UserTokenExpired,
 				Msg:  "token expired, please login again",
 			})
