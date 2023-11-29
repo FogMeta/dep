@@ -188,9 +188,6 @@ func (s *SpaceService) Deployments(deployment *model.Deployment, args ...int) (d
 	}
 
 	for _, dp := range deployments {
-		if dp.ResultURL != "" {
-			continue
-		}
 		if err := s.LagrangeSync(dp); err != nil {
 			log.Error(err)
 		}
@@ -214,6 +211,10 @@ func (s *SpaceService) Count(deployment *model.Deployment) (count int64, err err
 
 func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	if dp.ResultURL != "" {
+		if time.Since(dp.CreatedAt) > time.Duration(dp.Duration)*time.Second {
+			dp.Status = StatusStopped
+			dp.StatusMsg = "Stopped"
+		}
 		return
 	}
 	user, err := s.User(dp.UID, true)
