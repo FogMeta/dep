@@ -10,6 +10,7 @@ import (
 	"github.com/FogMeta/libra-os/model/req"
 	"github.com/FogMeta/libra-os/model/resp"
 	"github.com/FogMeta/libra-os/module/log"
+	"github.com/FogMeta/libra-os/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -91,12 +92,14 @@ func (api *DeploymentAPI) DeploymentList(c *gin.Context) {
 	}
 	deployments := make([]*resp.DeploymentInfo, 0, len(list))
 	for _, dp := range list {
+		specs, _ := service.CfgMachine(dp.CfgName)
 		deployments = append(deployments, &resp.DeploymentInfo{
 			ID:             dp.ID,
 			UID:            dp.UID,
 			SpaceID:        dp.SpaceID,
 			SpaceName:      dp.SpaceName,
 			CfgName:        dp.CfgName,
+			CfgSpecs:       specs,
 			Duration:       dp.Duration,
 			Region:         dp.Region,
 			ResultURL:      dp.ResultURL,
@@ -131,5 +134,6 @@ func (api *DeploymentAPI) DeploymentInfo(c *gin.Context) {
 		api.ErrResponse(c, result.InternalError, err)
 		return
 	}
+	info.CfgSpecs, _ = service.CfgMachine(info.CfgName)
 	api.Response(c, info)
 }

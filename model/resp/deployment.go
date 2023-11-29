@@ -23,6 +23,7 @@ type DeploymentInfo struct {
 	SpaceID        string `json:"space_id"`
 	SpaceName      string `json:"space_name"`
 	CfgName        string `json:"cfg_name"`
+	CfgSpecs       any    `json:"cfg_specs"`
 	Duration       int    `json:"duration"`
 	Region         string `json:"region"`
 	ResultURL      string `json:"result_url"`
