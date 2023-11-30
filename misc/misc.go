@@ -107,7 +107,7 @@ func CompareStructValues(src, dst any, tag string, excludeCols ...string) (value
 		}
 		name := field.Name
 		fv := dv.Field(i).Interface()
-		if name == "" || sm[name] == fv {
+		if sm[name] == fv {
 			continue
 		}
 		if tag != "" {
@@ -116,7 +116,7 @@ func CompareStructValues(src, dst any, tag string, excludeCols ...string) (value
 				name = ParseGormColumn(field.Name, name)
 			}
 		}
-		if !exm[name] {
+		if name != "" && !exm[name] {
 			values[name] = fv
 		}
 	}

@@ -15,7 +15,11 @@ import (
 	"github.com/FogMeta/libra-os/module/log"
 )
 
-var errNotFoundKey = errors.New("not found api token")
+var (
+	errNotFoundKey       = errors.New("not found api token")
+	errSpaceDeploying    = errors.New("Space does not have a corresponding job")
+	errSpaceDeployFailed = errors.New("Space does not have a corresponding Task")
+)
 
 const (
 	SourceLagrange = iota + 1
@@ -229,12 +233,22 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 		dp.JobID, err = lagClient.WithAPIKey(user.APIKey).JobID(dp.SpaceID)
 		if err != nil {
 			log.Error(err)
+			if err == errSpaceDeploying {
+				dp.StatusMsg = "Deploying"
+				return nil
+			}
+			if err == errSpaceDeployFailed {
+				dp.Status = StatusFailed
+				dp.StatusMsg = err.Error()
+				return nil
+			}
 			if expired {
 				log.Infof("deployment %d space %s deploy expired", dp.ID, dp.SpaceID)
 				dp.Status = StatusFailed
 				dp.StatusMsg = err.Error()
 				return nil
 			}
+			return err
 		}
 		dp.StatusMsg = "Deploying"
 		s.Updates(dp, "job_id")
@@ -270,12 +284,13 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	}
 
 	// update db
-	values, err := misc.CompareStructValues(deployment, dp, "grom", "id", "created_at", "updated_at")
+	values, err := misc.CompareStructValues(deployment, dp, "gorm", "id", "created_at", "updated_at")
 	if err != nil {
 		log.Error(err)
 		return
 	}
 	if len(values) > 0 {
+		log.Info("update values:", values)
 		return s.DB().Model(dp).Updates(values).Error
 	}
 	return nil
