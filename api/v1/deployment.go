@@ -103,6 +103,7 @@ func (api *DeploymentAPI) DeploymentList(c *gin.Context) {
 			Duration:       dp.Duration,
 			Region:         dp.Region,
 			ResultURL:      dp.ResultURL,
+			LastResultURL:  dp.LastResultURL,
 			ProviderID:     dp.ProviderID,
 			ProviderNodeID: dp.ProviderNodeID,
 			Cost:           dp.Cost,

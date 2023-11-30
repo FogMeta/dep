@@ -168,6 +168,7 @@ func (s *SpaceService) DeploymentInfo(uid int, id int) (deployment *resp.Deploym
 		Duration:       dp.Duration,
 		Region:         dp.Region,
 		ResultURL:      dp.ResultURL,
+		LastResultURL:  dp.LastResultURL,
 		ProviderID:     dp.ProviderID,
 		ProviderNodeID: dp.ProviderNodeID,
 		Cost:           dp.Cost,
@@ -243,6 +244,12 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	if err != nil {
 		log.Error(err)
 		return
+	}
+	if result.ResultURL != "" && dp.LastResultURL == "" {
+		dp.LastResultURL, err = lagrange.ResultURL(result.ResultURL)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	dp.StatusMsg = result.Status
 	dp.ResultURL = result.ResultURL

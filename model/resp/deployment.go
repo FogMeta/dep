@@ -27,6 +27,7 @@ type DeploymentInfo struct {
 	Duration       int    `json:"duration"`
 	Region         string `json:"region"`
 	ResultURL      string `json:"result_url"`
+	LastResultURL  string `json:"last_result_url"`
 	ProviderID     string `json:"provider_id"`
 	ProviderNodeID string `json:"provider_node_id"`
 	Cost           string `json:"cost"`
