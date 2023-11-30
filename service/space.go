@@ -268,5 +268,8 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 		log.Error(err)
 		return
 	}
-	return s.DB().Model(dp).Updates(values).Error
+	if len(values) > 0 {
+		return s.DB().Model(dp).Updates(values).Error
+	}
+	return nil
 }
