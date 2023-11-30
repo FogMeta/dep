@@ -16,9 +16,7 @@ import (
 )
 
 var (
-	errNotFoundKey       = errors.New("not found api token")
-	errSpaceDeploying    = errors.New("Space does not have a corresponding job")
-	errSpaceDeployFailed = errors.New("Space does not have a corresponding Task")
+	errNotFoundKey = errors.New("not found api token")
 )
 
 const (
@@ -233,11 +231,11 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 		dp.JobID, err = lagClient.WithAPIKey(user.APIKey).JobID(dp.SpaceID)
 		if err != nil {
 			log.Error(err)
-			if err == errSpaceDeploying {
+			if err.Error() == "Space does not have a corresponding job" {
 				dp.StatusMsg = "Deploying"
 				return nil
 			}
-			if err == errSpaceDeployFailed {
+			if err.Error() == "Space does not have a corresponding Task" {
 				dp.Status = StatusFailed
 				dp.StatusMsg = err.Error()
 				return nil
