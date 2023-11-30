@@ -15,8 +15,8 @@ type Deployment struct {
 	Region         string    `gorm:"column:region;not null;default:''"`
 	StartIn        int       `gorm:"column:start_in;not null;default:0"`
 	JobID          string    `gorm:"column:job_id;not null;default:''"`
-	ResultURL      string    `gorm:"column:result_url;not null;default:''"`
-	LastResultURL  string    `gorm:"column:last_result_url;not null;default:''"`
+	ResultURL      string    `gorm:"column:result_url;size:1024;not null;default:''"`
+	LastResultURL  string    `gorm:"column:last_result_url;size:1024;not null;default:''"`
 	ProviderID     string    `gorm:"column:provider_id;size:256;not null;default:''"`
 	ProviderNodeID string    `gorm:"column:provider_node_id;size:256;not null;default:''"`
 	Cost           string    `gorm:"column:cost;not null;default:''"`

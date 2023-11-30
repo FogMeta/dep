@@ -107,7 +107,7 @@ func CompareStructValues(src, dst any, tag string, excludeCols ...string) (value
 		}
 		name := field.Name
 		fv := dv.Field(i).Interface()
-		if sm[name] == fv {
+		if name == "" || sm[name] == fv {
 			continue
 		}
 		if tag != "" {
