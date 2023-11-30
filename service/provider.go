@@ -1,6 +1,8 @@
 package service
 
 import (
+	"sort"
+
 	"github.com/FogMeta/libra-os/module/lagrange"
 	"github.com/FogMeta/libra-os/module/log"
 )
@@ -62,6 +64,21 @@ func (s *ProviderService) Machines() (resource *lagrange.HardwareData, err error
 	if err != nil {
 		log.Error(err)
 	}
+	sort.Slice(resource.Hardware, func(i, j int) bool {
+		if resource.Hardware[i].HardwareType < resource.Hardware[j].HardwareType {
+			return true
+		}
+		if resource.Hardware[i].HardwareType == resource.Hardware[j].HardwareType &&
+			resource.Hardware[i].HardwareStatus < resource.Hardware[j].HardwareStatus {
+			return true
+		}
+		if resource.Hardware[i].HardwareType == resource.Hardware[j].HardwareType &&
+			resource.Hardware[i].HardwareStatus == resource.Hardware[j].HardwareStatus &&
+			resource.Hardware[i].HardwareID < resource.Hardware[j].HardwareID {
+			return true
+		}
+		return false
+	})
 	return
 }
 
