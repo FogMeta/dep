@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/FogMeta/libra-os/misc"
 	"github.com/FogMeta/libra-os/model"
 	"github.com/FogMeta/libra-os/model/req"
 	"github.com/FogMeta/libra-os/model/resp"
@@ -235,7 +236,9 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 			}
 		}
 		dp.StatusMsg = "Deploying"
+		s.Updates(dp, "job_id")
 	}
+	deployment := *dp
 	result, err := lagClient.WithAPIKey(user.APIKey).Deployment(dp.JobID, dp.SpaceID)
 	if err != nil {
 		log.Error(err)
@@ -258,18 +261,12 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 			dp.EndedAt = endedAt
 		}
 	}
+
 	// update db
-	s.DB().Model(dp).Updates(&model.Deployment{
-		JobID:          dp.JobID,
-		StatusMsg:      dp.StatusMsg,
-		ResultURL:      dp.ResultURL,
-		ProviderNodeID: dp.ProviderNodeID,
-		Cost:           dp.Cost,
-		Region:         dp.Region,
-		Spent:          dp.Spent,
-		ExpiredAt:      dp.ExpiredAt,
-		EndedAt:        dp.EndedAt,
-		Status:         dp.Status,
-	})
-	return
+	values, err := misc.CompareStructValues(deployment, dp, "grom", "id", "created_at", "updated_at")
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	return s.DB().Model(dp).Updates(values).Error
 }
