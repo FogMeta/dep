@@ -200,4 +200,5 @@ func Init() {
 		Host:    config.Conf().Lagrange.Host,
 		SDKHost: config.Conf().Lagrange.SDKHost,
 	}
+	lagClient.Log(config.Conf().Lagrange.Log)
 }

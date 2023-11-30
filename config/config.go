@@ -41,6 +41,7 @@ type Email struct {
 type Lagrange struct {
 	Host    string `toml:"host"`
 	SDKHost string `toml:"sdk_host"`
+	Log     bool   `toml:"log"`
 }
 
 type Log struct {

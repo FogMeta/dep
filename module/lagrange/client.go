@@ -24,6 +24,7 @@ type Client struct {
 	SDKHost string
 	token   string
 	apiKey  string
+	showLog bool
 	http.Client
 }
 
@@ -37,6 +38,10 @@ func (client *Client) WithAPIKey(key string) *Client {
 	c := *client
 	c.apiKey = key
 	return &c
+}
+
+func (client *Client) Log(enable bool) {
+	client.showLog = enable
 }
 
 func (client *Client) postJson(method string, data any, receiver any) error {
@@ -56,7 +61,6 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 		return errors.New("receiver must be a pointer")
 	}
 	var host, token string
-	log.Info("api method :", api, ",data: ", data)
 	if api == methodAPIToken || api == methodWallet {
 		host = client.Host
 		token = client.token
@@ -104,7 +108,9 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 	default:
 		return fmt.Errorf("not supported method %s", method)
 	}
-	log.Info("method: ", method, ",api: ", link, ",reader:", reader)
+	if client.showLog {
+		log.Info("method: ", method, ",api: ", link, ",reader:", reader)
+	}
 	req, err := http.NewRequest(method, link, reader)
 	if err != nil {
 		return err
@@ -119,7 +125,9 @@ func (client *Client) doRequest(method string, contentType string, data any, api
 	}
 	defer resp.Body.Close()
 	b, _ := io.ReadAll(resp.Body)
-	log.Info("response:", string(b))
+	if client.showLog {
+		log.Info("response:", string(b))
+	}
 	var result Result
 	result.Data = receiver
 	if err = json.Unmarshal(b, &result); err != nil {
