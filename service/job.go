@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/FogMeta/libra-os/config"
 	"github.com/FogMeta/libra-os/model"
 	"github.com/FogMeta/libra-os/module/lagrange"
 	"github.com/FogMeta/libra-os/module/log"
@@ -45,7 +46,7 @@ var machines sync.Map
 
 func SyncMachines() {
 	syncMachines()
-	ticker := time.NewTicker(time.Minute)
+	ticker := time.NewTicker(config.Conf().Cron.SyncMachinesDuration)
 	for range ticker.C {
 		syncMachines()
 	}

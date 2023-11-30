@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/BurntSushi/toml"
 )
 
@@ -11,6 +13,7 @@ type Configuration struct {
 	Email    Email    `toml:"email"`
 	Lagrange Lagrange `toml:"lagrange"`
 	Log      Log      `toml:"log"`
+	Cron     Cron     `toml:"cron"`
 }
 
 type Database struct {
@@ -46,6 +49,10 @@ type Lagrange struct {
 
 type Log struct {
 	Level int `toml:"level"`
+}
+
+type Cron struct {
+	SyncMachinesDuration time.Duration `toml:"sync_machines_duration"`
 }
 
 var conf Configuration
