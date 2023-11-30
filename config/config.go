@@ -52,7 +52,8 @@ type Log struct {
 }
 
 type Cron struct {
-	SyncMachinesDuration time.Duration `toml:"sync_machines_duration"`
+	SyncMachinesDuration   time.Duration `toml:"sync_machines_duration"`
+	SyncDeploymentDuration time.Duration `toml:"sync_deployment_duration"`
 }
 
 var conf Configuration

@@ -258,9 +258,6 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 			dp.EndedAt = endedAt
 		}
 	}
-	if result.ResultURL != "" {
-		dp.Status = StatusSuccess
-	}
 	// update db
 	s.DB().Model(dp).Updates(&model.Deployment{
 		JobID:          dp.JobID,

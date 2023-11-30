@@ -22,7 +22,7 @@ type JobService struct {
 }
 
 func (s *JobService) Run() {
-	timer := time.NewTicker(time.Minute * 1)
+	timer := time.NewTicker(config.Conf().Cron.SyncDeploymentDuration)
 	for range timer.C {
 		s.SyncDeployment()
 	}
@@ -30,7 +30,7 @@ func (s *JobService) Run() {
 
 func (s *JobService) SyncDeployment() (err error) {
 	var deployments []*model.Deployment
-	if err = s.DB().Model(model.Deployment{}).Where("result_url = ''").Find(&deployments).Error; err != nil {
+	if err = s.DB().Model(model.Deployment{}).Where("status BETWEEN ? AND ?", StatusReady, StatusSuccess).Find(&deployments).Error; err != nil {
 		log.Error(err)
 		return
 	}
