@@ -185,15 +185,15 @@ func (client *Client) Deployment(jobUUID, spaceUUID string) (deployment *Deploym
 }
 
 type Deployment struct {
-	DeployStatus   string      `json:"deploy_status"`
-	EndedAt        interface{} `json:"ended_at"`
-	ExpectedCost   string      `json:"expected_cost"`
-	ExpiresAt      int64       `json:"expires_at"`
-	ProviderNodeID string      `json:"provider_node_id"`
-	Region         string      `json:"region"`
-	ResultURL      string      `json:"result_url"`
-	Spent          int64       `json:"spent"`
-	Status         string      `json:"status"`
+	DeployStatus   string  `json:"deploy_status"`
+	EndedAt        *string `json:"ended_at"`
+	ExpectedCost   string  `json:"expected_cost"`
+	ExpiresAt      int64   `json:"expires_at"`
+	ProviderNodeID string  `json:"provider_node_id"`
+	Region         string  `json:"region"`
+	ResultURL      string  `json:"result_url"`
+	Spent          int64   `json:"spent"`
+	Status         string  `json:"status"`
 }
 
 func (client *Client) DeploymentList() (deployments []*DeploymentAbstract, err error) {

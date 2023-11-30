@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,6 +36,7 @@ var statusMap = map[string]int{
 	"Pending":                 StatusTransaction,
 	"Waiting for transaction": StatusTransaction,
 	"Assigning to provider":   StatusAssignProvider,
+	"Complete":                StatusStopped,
 }
 
 type SpaceService struct {
@@ -168,6 +170,9 @@ func (s *SpaceService) DeploymentInfo(uid int, id int) (deployment *resp.Deploym
 		ProviderID:     dp.ProviderID,
 		ProviderNodeID: dp.ProviderNodeID,
 		Cost:           dp.Cost,
+		Spent:          dp.Spent,
+		ExpiredAt:      dp.ExpiredAt,
+		EndedAt:        dp.EndedAt,
 		Status:         dp.Status,
 		StatusMsg:      dp.StatusMsg,
 		Source:         SourceLagrange,
@@ -210,11 +215,7 @@ func (s *SpaceService) Count(deployment *model.Deployment) (count int64, err err
 }
 
 func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
-	if dp.ResultURL != "" {
-		if time.Since(dp.CreatedAt) > time.Duration(dp.Duration)*time.Second {
-			dp.Status = StatusStopped
-			dp.StatusMsg = "Stopped"
-		}
+	if dp.Status == StatusStopped {
 		return
 	}
 	user, err := s.User(dp.UID, true)
@@ -243,19 +244,34 @@ func (s *DBService) LagrangeSync(dp *model.Deployment) (err error) {
 	dp.StatusMsg = result.Status
 	dp.ResultURL = result.ResultURL
 	dp.ProviderNodeID = result.ProviderNodeID
+	dp.Region = result.Region
 	dp.Cost = result.ExpectedCost
+	dp.Spent = int(result.Spent)
 	dp.StatusMsg = result.DeployStatus
 	dp.Status = statusMap[result.DeployStatus]
+	dp.ExpiredAt = result.ExpiresAt
+	if result.EndedAt != nil {
+		endedAt, err := strconv.ParseInt(*result.EndedAt, 10, 64)
+		if err != nil {
+			log.Error(err)
+		} else {
+			dp.EndedAt = endedAt
+		}
+	}
 	if result.ResultURL != "" {
 		dp.Status = StatusSuccess
 	}
 	// update db
 	s.DB().Model(dp).Updates(&model.Deployment{
 		JobID:          dp.JobID,
-		StatusMsg:      result.Status,
-		ResultURL:      result.ResultURL,
-		ProviderNodeID: result.ProviderNodeID,
-		Cost:           result.ExpectedCost,
+		StatusMsg:      dp.StatusMsg,
+		ResultURL:      dp.ResultURL,
+		ProviderNodeID: dp.ProviderNodeID,
+		Cost:           dp.Cost,
+		Region:         dp.Region,
+		Spent:          dp.Spent,
+		ExpiredAt:      dp.ExpiredAt,
+		EndedAt:        dp.EndedAt,
 		Status:         dp.Status,
 	})
 	return

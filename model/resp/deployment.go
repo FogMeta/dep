@@ -30,6 +30,9 @@ type DeploymentInfo struct {
 	ProviderID     string `json:"provider_id"`
 	ProviderNodeID string `json:"provider_node_id"`
 	Cost           string `json:"cost"`
+	Spent          int    `json:"spent"`
+	ExpiredAt      int64  `json:"expired_at"`
+	EndedAt        int64  `json:"ended_at"`
 	Status         int    `json:"status"`
 	StatusMsg      string `json:"status_msg"`
 	Source         int    `json:"source"`
