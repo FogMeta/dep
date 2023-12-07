@@ -6,6 +6,7 @@ import (
 	"github.com/FogMeta/libra-os/api"
 	"github.com/FogMeta/libra-os/api/result"
 	"github.com/FogMeta/libra-os/model/req"
+	"github.com/FogMeta/libra-os/module/log"
 	"github.com/FogMeta/libra-os/service"
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,7 @@ func (api *SpaceAPI) SpaceInfo(c *gin.Context) {
 		return
 	}
 	if user.Wallet != info.Wallet {
+		log.Errorf("space wallet not match, space wallet: %s, your wallet: %s", info.Wallet, user.Wallet)
 		api.ErrResponse(c, result.SpaceWalletNotMatch, errors.New("space must be your own, please fork to your space and retry"))
 		return
 	}
