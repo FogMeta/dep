@@ -35,11 +35,15 @@ type WalletAddrResult struct {
 	WalletAddress *string `json:"wallet_address"`
 }
 
+type WalletResult struct {
+	PublicAddress *string `json:"public_address"`
+}
+
 func (client *Client) TokenWallet() (wallet string, err error) {
 	data := url.Values{}
 	data.Set("Token", client.apiKey)
-	var result WalletAddrResult
-	result.WalletAddress = &wallet
+	var result WalletResult
+	result.PublicAddress = &wallet
 	err = client.postForm(methodTokenWallet, data, &result)
 	return
 }
